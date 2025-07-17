@@ -1,5 +1,5 @@
 'use client';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { 
   ArrowLeft, 
@@ -10,11 +10,187 @@ import {
   User, 
   Mail, 
   MessageSquare,
-//   Globe,
-//   Zap,
   Check,
-  Settings
+  Settings,
+  ChevronDown
 } from 'lucide-react';
+import { useState } from 'react';
+
+// Language content
+const privacyContent = {
+  en: {
+    title: "Privacy Policy",
+    lastUpdated: "Last Updated",
+    sections: {
+      information: "1. Information We Collect",
+      usage: "2. How We Use Your Data",
+      security: "3. Data Security",
+      rights: "4. Your Rights",
+      contact: "5. Contact Us"
+    },
+    creatorInfo: {
+      title: "Creator Information",
+      items: [
+        "Stage name/alias",
+        "Contact email",
+        "Payment details (processed securely)"
+      ]
+    },
+    contentMetadata: {
+      title: "Content Metadata",
+      items: [
+        "Upload timestamps",
+        "Content access logs",
+        "Engagement analytics"
+      ]
+    },
+    technicalData: {
+      title: "Technical Data",
+      items: [
+        "Device information",
+        "IP address (anonymized)",
+        "Browser type/version"
+      ]
+    },
+    usageItems: [
+      {
+        title: "Platform Operation",
+        description: "To provide and maintain our services, process payments, and ensure platform security"
+      },
+      {
+        title: "Content Delivery",
+        description: "To host and distribute your content according to your specified access rules"
+      },
+      {
+        title: "Marketing Support",
+        description: "To promote your content across platforms as per your preferences"
+      }
+    ],
+    securityItems: [
+      {
+        title: "Encryption",
+        description: "All data is encrypted in transit and at rest using AES-256 encryption"
+      },
+      {
+        title: "Anonymity",
+        description: "Faceless creator options with AI overlays to protect identity"
+      },
+      {
+        title: "Access Control",
+        description: "Strict role-based access with multi-factor authentication"
+      }
+    ],
+    rightsItems: [
+      {
+        title: "Access & Portability",
+        description: "Request a copy of your data in machine-readable format"
+      },
+      {
+        title: "Correction",
+        description: "Update or correct inaccurate personal information"
+      },
+      {
+        title: "Deletion",
+        description: "Request deletion of your personal data where applicable"
+      },
+      {
+        title: "Restriction",
+        description: "Limit how we use your data in certain circumstances"
+      }
+    ],
+    contact: {
+      email: "je@globalfanflicks.com",
+      telegram: "@GlobalFanFlicksSupport"
+    },
+    backButton: "Back to Home"
+  },
+  es: {
+    title: "Política de Privacidad",
+    lastUpdated: "Última actualización",
+    sections: {
+      information: "1. Información que Recopilamos",
+      usage: "2. Cómo Usamos Tus Datos",
+      security: "3. Seguridad de Datos",
+      rights: "4. Tus Derechos",
+      contact: "5. Contacto"
+    },
+    creatorInfo: {
+      title: "Información del Creador",
+      items: [
+        "Nombre artístico/alias",
+        "Correo electrónico de contacto",
+        "Detalles de pago (procesados de forma segura)"
+      ]
+    },
+    contentMetadata: {
+      title: "Metadatos de Contenido",
+      items: [
+        "Marcas de tiempo de carga",
+        "Registros de acceso al contenido",
+        "Analíticas de interacción"
+      ]
+    },
+    technicalData: {
+      title: "Datos Técnicos",
+      items: [
+        "Información del dispositivo",
+        "Dirección IP (anonimizada)",
+        "Tipo/versión del navegador"
+      ]
+    },
+    usageItems: [
+      {
+        title: "Operación de la Plataforma",
+        description: "Para proporcionar y mantener nuestros servicios, procesar pagos y garantizar la seguridad de la plataforma"
+      },
+      {
+        title: "Distribución de Contenido",
+        description: "Para alojar y distribuir tu contenido según las reglas de acceso especificadas"
+      },
+      {
+        title: "Soporte de Marketing",
+        description: "Para promocionar tu contenido en varias plataformas según tus preferencias"
+      }
+    ],
+    securityItems: [
+      {
+        title: "Encriptación",
+        description: "Todos los datos se encriptan en tránsito y en reposo usando encriptación AES-256"
+      },
+      {
+        title: "Anonimato",
+        description: "Opciones para creadores sin rostro con superposiciones de IA para proteger la identidad"
+      },
+      {
+        title: "Control de Acceso",
+        description: "Acceso estricto basado en roles con autenticación multifactor"
+      }
+    ],
+    rightsItems: [
+      {
+        title: "Acceso y Portabilidad",
+        description: "Solicitar una copia de tus datos en formato legible por máquina"
+      },
+      {
+        title: "Corrección",
+        description: "Actualizar o corregir información personal inexacta"
+      },
+      {
+        title: "Eliminación",
+        description: "Solicitar la eliminación de tus datos personales cuando sea aplicable"
+      },
+      {
+        title: "Restricción",
+        description: "Limitar cómo usamos tus datos en ciertas circunstancias"
+      }
+    ],
+    contact: {
+      email: "soporte@globalfanflicks.com",
+      telegram: "@GlobalFanFlicksSupport"
+    },
+    backButton: "Volver al Inicio"
+  }
+};
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -22,6 +198,9 @@ const sectionVariants = {
 };
 
 export default function PrivacyPolicy() {
+  const [lang, setLang] = useState<'en' | 'es'>('en');
+  const currentContent = privacyContent[lang];
+
   return (
     <div className="privacy-container" style={{
       maxWidth: '1200px',
@@ -35,7 +214,8 @@ export default function PrivacyPolicy() {
       `,
       minHeight: '100vh',
       position: 'relative',
-      overflow: 'hidden'
+      overflow: 'hidden',
+      fontFamily: "'Poppins', sans-serif"
     }}>
       {/* Animated background elements */}
       {[...Array(8)].map((_, i) => (
@@ -63,6 +243,54 @@ export default function PrivacyPolicy() {
         />
       ))}
 
+      {/* Language Toggle */}
+      <div style={{
+        position: 'fixed',
+        top: '1.5rem',
+        right: '1.5rem',
+        zIndex: 1000,
+        display: 'flex',
+        gap: '0.5rem',
+        background: 'rgba(20,20,20,0.7)',
+        backdropFilter: 'blur(10px)',
+        borderRadius: '999px',
+        padding: '0.3rem',
+        border: '1px solid rgba(255,255,255,0.1)',
+      }}>
+        <button
+          onClick={() => setLang('en')}
+          style={{
+            background: lang === 'en' ? 'linear-gradient(45deg, #ff007a, #a100ff)' : 'transparent',
+            color: lang === 'en' ? '#fff' : '#999',
+            padding: '0.3rem 1rem',
+            border: 'none',
+            borderRadius: '999px',
+            cursor: 'pointer',
+            fontWeight: 600,
+            fontSize: '0.9rem',
+            transition: 'all 0.3s ease',
+          }}
+        >
+          EN
+        </button>
+        <button
+          onClick={() => setLang('es')}
+          style={{
+            background: lang === 'es' ? 'linear-gradient(45deg, #ff007a, #a100ff)' : 'transparent',
+            color: lang === 'es' ? '#fff' : '#999',
+            padding: '0.3rem 1rem',
+            border: 'none',
+            borderRadius: '999px',
+            cursor: 'pointer',
+            fontWeight: 600,
+            fontSize: '0.9rem',
+            transition: 'all 0.3s ease',
+          }}
+        >
+          ES
+        </button>
+      </div>
+
       <div style={{ marginBottom: '3rem', position: 'relative' }}>
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -80,7 +308,8 @@ export default function PrivacyPolicy() {
             padding: '0.8rem 1.5rem',
             borderRadius: '50px',
             border: '1px solid rgba(255,255,255,0.1)',
-            transition: 'all 0.3s ease'
+            transition: 'all 0.3s ease',
+            fontFamily: "'Poppins', sans-serif"
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background = 'rgba(161, 0, 255, 0.2)';
@@ -91,7 +320,7 @@ export default function PrivacyPolicy() {
             e.currentTarget.style.boxShadow = 'none';
           }}>
             <ArrowLeft size={20} style={{ marginRight: '0.8rem' }} />
-            <span style={{ fontWeight: 600 }}>Back to Home</span>
+            <span style={{ fontWeight: 600 }}>{currentContent.backButton}</span>
           </Link>
         </motion.div>
 
@@ -101,7 +330,7 @@ export default function PrivacyPolicy() {
           transition={{ delay: 0.4 }}
         >
           <h1 style={{
-            fontSize: '3rem',
+            fontSize: 'clamp(2rem, 5vw, 3rem)',
             fontWeight: 800,
             marginBottom: '1.5rem',
             background: 'linear-gradient(90deg, #ff007a, #a100ff)',
@@ -109,9 +338,10 @@ export default function PrivacyPolicy() {
             WebkitTextFillColor: 'transparent',
             lineHeight: 1.2,
             position: 'relative',
-            display: 'inline-block'
+            display: 'inline-block',
+            fontFamily: "'Poppins', sans-serif"
           }}>
-            Privacy Policy
+            {currentContent.title}
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: '100%' }}
@@ -128,11 +358,16 @@ export default function PrivacyPolicy() {
           </h1>
           <p style={{
             color: '#aaa',
-            fontSize: '1.2rem',
+            fontSize: 'clamp(1rem, 2vw, 1.2rem)',
             maxWidth: '800px',
-            lineHeight: 1.6
+            lineHeight: 1.6,
+            fontFamily: "'Poppins', sans-serif"
           }}>
-            Last Updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            {currentContent.lastUpdated}: {new Date().toLocaleDateString(lang === 'en' ? 'en-US' : 'es-ES', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            })}
           </p>
         </motion.div>
       </div>
@@ -164,7 +399,14 @@ export default function PrivacyPolicy() {
             }}>
               <Database size={24} />
             </div>
-            <h2 style={{ fontSize: '1.8rem', fontWeight: 700, color: '#fff' }}>1. Information We Collect</h2>
+            <h2 style={{ 
+              fontSize: 'clamp(1.5rem, 3vw, 1.8rem)', 
+              fontWeight: 700, 
+              color: '#fff',
+              fontFamily: "'Poppins', sans-serif"
+            }}>
+              {currentContent.sections.information}
+            </h2>
           </div>
           
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem', margin: '2rem 0' }}>
@@ -174,13 +416,22 @@ export default function PrivacyPolicy() {
               borderRadius: '12px',
               border: '1px solid rgba(255,255,255,0.1)'
             }}>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '1rem', color: '#a100ff', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <User size={18} /> Creator Information
+              <h3 style={{ 
+                fontSize: '1.2rem', 
+                fontWeight: 600, 
+                marginBottom: '1rem', 
+                color: '#a100ff', 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '0.5rem',
+                fontFamily: "'Poppins', sans-serif"
+              }}>
+                <User size={18} /> {currentContent.creatorInfo.title}
               </h3>
-              <ul style={{ paddingLeft: '1rem' }}>
-                <li style={{ marginBottom: '0.5rem' }}>Stage name/alias</li>
-                <li style={{ marginBottom: '0.5rem' }}>Contact email</li>
-                <li>Payment details (processed securely)</li>
+              <ul style={{ paddingLeft: '1rem', fontFamily: "'Poppins', sans-serif" }}>
+                {currentContent.creatorInfo.items.map((item, index) => (
+                  <li key={index} style={{ marginBottom: '0.5rem' }}>{item}</li>
+                ))}
               </ul>
             </div>
             
@@ -190,13 +441,22 @@ export default function PrivacyPolicy() {
               borderRadius: '12px',
               border: '1px solid rgba(255,255,255,0.1)'
             }}>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '1rem', color: '#a100ff', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <EyeOff size={18} /> Content Metadata
+              <h3 style={{ 
+                fontSize: '1.2rem', 
+                fontWeight: 600, 
+                marginBottom: '1rem', 
+                color: '#a100ff', 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '0.5rem',
+                fontFamily: "'Poppins', sans-serif"
+              }}>
+                <EyeOff size={18} /> {currentContent.contentMetadata.title}
               </h3>
-              <ul style={{ paddingLeft: '1rem' }}>
-                <li style={{ marginBottom: '0.5rem' }}>Upload timestamps</li>
-                <li style={{ marginBottom: '0.5rem' }}>Content access logs</li>
-                <li>Engagement analytics</li>
+              <ul style={{ paddingLeft: '1rem', fontFamily: "'Poppins', sans-serif" }}>
+                {currentContent.contentMetadata.items.map((item, index) => (
+                  <li key={index} style={{ marginBottom: '0.5rem' }}>{item}</li>
+                ))}
               </ul>
             </div>
             
@@ -206,13 +466,22 @@ export default function PrivacyPolicy() {
               borderRadius: '12px',
               border: '1px solid rgba(255,255,255,0.1)'
             }}>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '1rem', color: '#a100ff', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Shield size={18} /> Technical Data
+              <h3 style={{ 
+                fontSize: '1.2rem', 
+                fontWeight: 600, 
+                marginBottom: '1rem', 
+                color: '#a100ff', 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '0.5rem',
+                fontFamily: "'Poppins', sans-serif"
+              }}>
+                <Shield size={18} /> {currentContent.technicalData.title}
               </h3>
-              <ul style={{ paddingLeft: '1rem' }}>
-                <li style={{ marginBottom: '0.5rem' }}>Device information</li>
-                <li style={{ marginBottom: '0.5rem' }}>IP address (anonymized)</li>
-                <li>Browser type/version</li>
+              <ul style={{ paddingLeft: '1rem', fontFamily: "'Poppins', sans-serif" }}>
+                {currentContent.technicalData.items.map((item, index) => (
+                  <li key={index} style={{ marginBottom: '0.5rem' }}>{item}</li>
+                ))}
               </ul>
             </div>
           </div>
@@ -233,66 +502,51 @@ export default function PrivacyPolicy() {
             }}>
               <Settings size={24} />
             </div>
-            <h2 style={{ fontSize: '1.8rem', fontWeight: 700, color: '#fff' }}>2. How We Use Your Data</h2>
+            <h2 style={{ 
+              fontSize: 'clamp(1.5rem, 3vw, 1.8rem)', 
+              fontWeight: 700, 
+              color: '#fff',
+              fontFamily: "'Poppins', sans-serif"
+            }}>
+              {currentContent.sections.usage}
+            </h2>
           </div>
           
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem', margin: '2rem 0' }}>
-            <div style={{
-              padding: '1.5rem',
-              background: 'rgba(161, 0, 255, 0.1)',
-              borderRadius: '12px',
-              border: '1px solid rgba(161, 0, 255, 0.3)',
-              position: 'relative'
-            }}>
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '4px',
-                background: 'linear-gradient(90deg, #ff007a, #a100ff)'
-              }} />
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '1rem', color: '#fff' }}>Platform Operation</h3>
-              <p style={{ color: '#aaa', fontSize: '0.95rem' }}>To provide and maintain our services, process payments, and ensure platform security</p>
-            </div>
-            
-            <div style={{
-              padding: '1.5rem',
-              background: 'rgba(161, 0, 255, 0.1)',
-              borderRadius: '12px',
-              border: '1px solid rgba(161, 0, 255, 0.3)',
-              position: 'relative'
-            }}>
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '4px',
-                background: 'linear-gradient(90deg, #ff007a, #a100ff)'
-              }} />
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '1rem', color: '#fff' }}>Content Delivery</h3>
-              <p style={{ color: '#aaa', fontSize: '0.95rem' }}>To host and distribute your content according to your specified access rules</p>
-            </div>
-            
-            <div style={{
-              padding: '1.5rem',
-              background: 'rgba(161, 0, 255, 0.1)',
-              borderRadius: '12px',
-              border: '1px solid rgba(161, 0, 255, 0.3)',
-              position: 'relative'
-            }}>
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '4px',
-                background: 'linear-gradient(90deg, #ff007a, #a100ff)'
-              }} />
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '1rem', color: '#fff' }}>Marketing Support</h3>
-              <p style={{ color: '#aaa', fontSize: '0.95rem' }}>To promote your content across platforms as per your preferences</p>
-            </div>
+            {currentContent.usageItems.map((item, index) => (
+              <div key={index} style={{
+                padding: '1.5rem',
+                background: 'rgba(161, 0, 255, 0.1)',
+                borderRadius: '12px',
+                border: '1px solid rgba(161, 0, 255, 0.3)',
+                position: 'relative'
+              }}>
+                <div style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '4px',
+                  background: 'linear-gradient(90deg, #ff007a, #a100ff)'
+                }} />
+                <h3 style={{ 
+                  fontSize: '1.2rem', 
+                  fontWeight: 600, 
+                  marginBottom: '1rem', 
+                  color: '#fff',
+                  fontFamily: "'Poppins', sans-serif"
+                }}>
+                  {item.title}
+                </h3>
+                <p style={{ 
+                  color: '#aaa', 
+                  fontSize: '0.95rem',
+                  fontFamily: "'Poppins', sans-serif"
+                }}>
+                  {item.description}
+                </p>
+              </div>
+            ))}
           </div>
         </motion.section>
 
@@ -311,69 +565,52 @@ export default function PrivacyPolicy() {
             }}>
               <Lock size={24} />
             </div>
-            <h2 style={{ fontSize: '1.8rem', fontWeight: 700, color: '#fff' }}>3. Data Security</h2>
+            <h2 style={{ 
+              fontSize: 'clamp(1.5rem, 3vw, 1.8rem)', 
+              fontWeight: 700, 
+              color: '#fff',
+              fontFamily: "'Poppins', sans-serif"
+            }}>
+              {currentContent.sections.security}
+            </h2>
           </div>
           
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', margin: '2rem 0' }}>
-            <div style={{
-              padding: '1.5rem',
-              background: 'rgba(20, 20, 20, 0.5)',
-              borderRadius: '12px',
-              border: '1px solid rgba(255,255,255,0.1)',
-              position: 'relative',
-              overflow: 'hidden'
-            }}>
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '4px',
-                background: 'linear-gradient(90deg, #ff007a, #a100ff)'
-              }} />
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '1rem', color: '#fff' }}>Encryption</h3>
-              <p style={{ color: '#aaa', fontSize: '0.95rem' }}>All data is encrypted in transit and at rest using AES-256 encryption</p>
-            </div>
-            
-            <div style={{
-              padding: '1.5rem',
-              background: 'rgba(20, 20, 20, 0.5)',
-              borderRadius: '12px',
-              border: '1px solid rgba(255,255,255,0.1)',
-              position: 'relative',
-              overflow: 'hidden'
-            }}>
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '4px',
-                background: 'linear-gradient(90deg, #ff007a, #a100ff)'
-              }} />
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '1rem', color: '#fff' }}>Anonymity</h3>
-              <p style={{ color: '#aaa', fontSize: '0.95rem' }}>Faceless creator options with AI overlays to protect identity</p>
-            </div>
-            
-            <div style={{
-              padding: '1.5rem',
-              background: 'rgba(20, 20, 20, 0.5)',
-              borderRadius: '12px',
-              border: '1px solid rgba(255,255,255,0.1)',
-              position: 'relative',
-              overflow: 'hidden'
-            }}>
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '4px',
-                background: 'linear-gradient(90deg, #ff007a, #a100ff)'
-              }} />
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '1rem', color: '#fff' }}>Access Control</h3>
-              <p style={{ color: '#aaa', fontSize: '0.95rem' }}>Strict role-based access with multi-factor authentication</p>
-            </div>
+            {currentContent.securityItems.map((item, index) => (
+              <div key={index} style={{
+                padding: '1.5rem',
+                background: 'rgba(20, 20, 20, 0.5)',
+                borderRadius: '12px',
+                border: '1px solid rgba(255,255,255,0.1)',
+                position: 'relative',
+                overflow: 'hidden'
+              }}>
+                <div style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '4px',
+                  background: 'linear-gradient(90deg, #ff007a, #a100ff)'
+                }} />
+                <h3 style={{ 
+                  fontSize: '1.2rem', 
+                  fontWeight: 600, 
+                  marginBottom: '1rem', 
+                  color: '#fff',
+                  fontFamily: "'Poppins', sans-serif"
+                }}>
+                  {item.title}
+                </h3>
+                <p style={{ 
+                  color: '#aaa', 
+                  fontSize: '0.95rem',
+                  fontFamily: "'Poppins', sans-serif"
+                }}>
+                  {item.description}
+                </p>
+              </div>
+            ))}
           </div>
         </motion.section>
 
@@ -392,49 +629,42 @@ export default function PrivacyPolicy() {
             }}>
               <Check size={24} />
             </div>
-            <h2 style={{ fontSize: '1.8rem', fontWeight: 700, color: '#fff' }}>4. Your Rights</h2>
+            <h2 style={{ 
+              fontSize: 'clamp(1.5rem, 3vw, 1.8rem)', 
+              fontWeight: 700, 
+              color: '#fff',
+              fontFamily: "'Poppins', sans-serif"
+            }}>
+              {currentContent.sections.rights}
+            </h2>
           </div>
           
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', margin: '2rem 0' }}>
-            <div style={{
-              padding: '1.5rem',
-              background: 'rgba(161, 0, 255, 0.1)',
-              borderRadius: '12px',
-              border: '1px solid rgba(161, 0, 255, 0.3)'
-            }}>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.5rem', color: '#fff' }}>Access & Portability</h3>
-              <p style={{ color: '#aaa', fontSize: '0.9rem' }}>Request a copy of your data in machine-readable format</p>
-            </div>
-            
-            <div style={{
-              padding: '1.5rem',
-              background: 'rgba(161, 0, 255, 0.1)',
-              borderRadius: '12px',
-              border: '1px solid rgba(161, 0, 255, 0.3)'
-            }}>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.5rem', color: '#fff' }}>Correction</h3>
-              <p style={{ color: '#aaa', fontSize: '0.9rem' }}>Update or correct inaccurate personal information</p>
-            </div>
-            
-            <div style={{
-              padding: '1.5rem',
-              background: 'rgba(161, 0, 255, 0.1)',
-              borderRadius: '12px',
-              border: '1px solid rgba(161, 0, 255, 0.3)'
-            }}>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.5rem', color: '#fff' }}>Deletion</h3>
-              <p style={{ color: '#aaa', fontSize: '0.9rem' }}>Request deletion of your personal data where applicable</p>
-            </div>
-            
-            <div style={{
-              padding: '1.5rem',
-              background: 'rgba(161, 0, 255, 0.1)',
-              borderRadius: '12px',
-              border: '1px solid rgba(161, 0, 255, 0.3)'
-            }}>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.5rem', color: '#fff' }}>Restriction</h3>
-              <p style={{ color: '#aaa', fontSize: '0.9rem' }}>Limit how we use your data in certain circumstances</p>
-            </div>
+            {currentContent.rightsItems.map((item, index) => (
+              <div key={index} style={{
+                padding: '1.5rem',
+                background: 'rgba(161, 0, 255, 0.1)',
+                borderRadius: '12px',
+                border: '1px solid rgba(161, 0, 255, 0.3)'
+              }}>
+                <h3 style={{ 
+                  fontSize: '1.1rem', 
+                  fontWeight: 600, 
+                  marginBottom: '0.5rem', 
+                  color: '#fff',
+                  fontFamily: "'Poppins', sans-serif"
+                }}>
+                  {item.title}
+                </h3>
+                <p style={{ 
+                  color: '#aaa', 
+                  fontSize: '0.9rem',
+                  fontFamily: "'Poppins', sans-serif"
+                }}>
+                  {item.description}
+                </p>
+              </div>
+            ))}
           </div>
         </motion.section>
 
@@ -453,11 +683,18 @@ export default function PrivacyPolicy() {
             }}>
               <Mail size={24} />
             </div>
-            <h2 style={{ fontSize: '1.8rem', fontWeight: 700, color: '#fff' }}>5. Contact Us</h2>
+            <h2 style={{ 
+              fontSize: 'clamp(1.5rem, 3vw, 1.8rem)', 
+              fontWeight: 700, 
+              color: '#fff',
+              fontFamily: "'Poppins', sans-serif"
+            }}>
+              {currentContent.sections.contact}
+            </h2>
           </div>
           
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.5rem' }}>
-            <a href="mailto:je@globalfanflicks.com" style={{
+            <a href={`mailto:${currentContent.contact.email}`} style={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.5rem',
@@ -467,7 +704,8 @@ export default function PrivacyPolicy() {
               borderRadius: '8px',
               background: 'rgba(161, 0, 255, 0.1)',
               border: '1px solid rgba(161, 0, 255, 0.3)',
-              transition: 'all 0.3s ease'
+              transition: 'all 0.3s ease',
+              fontFamily: "'Poppins', sans-serif"
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.background = 'rgba(161, 0, 255, 0.2)';
@@ -478,10 +716,10 @@ export default function PrivacyPolicy() {
               e.currentTarget.style.boxShadow = 'none';
             }}>
               <Mail size={18} />
-              je@globalfanflicks.com
+              {currentContent.contact.email}
             </a>
             
-            <a href="https://t.me/GlobalFanFlicksSupport" target="_blank" rel="noopener noreferrer" style={{
+            <a href={`https://t.me/${currentContent.contact.telegram.replace('@', '')}`} target="_blank" rel="noopener noreferrer" style={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.5rem',
@@ -491,7 +729,8 @@ export default function PrivacyPolicy() {
               borderRadius: '8px',
               background: 'rgba(161, 0, 255, 0.1)',
               border: '1px solid rgba(161, 0, 255, 0.3)',
-              transition: 'all 0.3s ease'
+              transition: 'all 0.3s ease',
+              fontFamily: "'Poppins', sans-serif"
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.background = 'rgba(161, 0, 255, 0.2)';
@@ -502,7 +741,7 @@ export default function PrivacyPolicy() {
               e.currentTarget.style.boxShadow = 'none';
             }}>
               <MessageSquare size={18} />
-              Telegram Support
+              {currentContent.contact.telegram}
             </a>
           </div>
         </motion.section>

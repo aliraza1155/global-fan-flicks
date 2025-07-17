@@ -8,14 +8,12 @@ import {
   Rocket,
   UserPlus,
   CheckCircle,
-  // ChevronRight,
   Mail,
   MessageSquare,
   X,
   Menu,
   ArrowRight,
   Star,
-  // Lock,
   Shield,
   Zap,
   DollarSign,
@@ -24,119 +22,147 @@ import {
   Camera,
   Smile,
   ChevronDown,
+  Phone,
 } from "lucide-react";
 import Head from "next/head";
 import Link from "next/link";
 
-// Model data with Unsplash images
+// Updated model data with only 2 models
+// Updated model data with Ana and Evely from Colombia
 const modelData = [
   {
     id: 1,
-    name: "Luna",
+    name: "Ana",
     category: "Fitness",
-    country: "USA",
-    image:
-      "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Zml0bmVzcyUyMG1vZGVsfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60",
+    country: "Colombia",
+    image: "/images/Ana-model-image.jpg",
   },
   {
     id: 2,
-    name: "Sophie",
-    category: "Glamour",
-    country: "France",
-    image:
-      "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8Z2xhbW91ciUyMG1vZGVsfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60",
-  },
-  {
-    id: 3,
-    name: "Mia",
-    category: "NSFW",
-    country: "Brazil",
-    image:
-      "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fG1vZGVsfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60",
-  },
-  {
-    id: 4,
-    name: "Elena",
-    category: "Cosplay",
-    country: "Spain",
-    image:
-      "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGNvc3BsYXklMjBtb2RlbHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60",
-  },
-  {
-    id: 5,
-    name: "Aisha",
-    category: "Fitness",
-    country: "UK",
-    image:
-      "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fGZpdG5lc3MlMjBtb2RlbHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60",
-  },
-  {
-    id: 6,
-    name: "Valentina",
+    name: "Evely",
     category: "Glamour",
     country: "Colombia",
-    image:
-      "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fG1vZGVsfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60",
+    image: "/images/Evely-model-image.jpg",
   },
 ];
 
-// 3D Model Component (Placeholder - would use Three.js in production)
-const Model3DPreview = () => {
+// Profiles Showcase Component (Replacing 3D Model Preview)
+const ProfilesShowcase = () => {
+  const models = [
+    {
+      name: "Ana",
+      country: "Brazil",
+      age: 24,
+      link: "https://scrile.com/ana-model",
+      image: "/images/Ana-model-image.jpg", // Assuming the image is in the public folder
+    },
+    {
+      name: "Evely",
+      country: "USA",
+      age: 22,
+      link: "https://scrile.com/evely-model",
+      image: "images/Evely-model-image.jpg", // Assuming the image is in the public folder
+    },
+  ];
+
   return (
     <div
       style={{
         width: "100%",
-        height: "400px",
-        background:
-          "radial-gradient(circle at center, #2a0a45 0%, #0a0420 100%)",
-        borderRadius: "16px",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        position: "relative",
-        overflow: "hidden",
+        padding: "2rem 0",
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+        gap: "2rem",
         margin: "2rem 0",
       }}
     >
-      <div
-        style={{
-          position: "absolute",
-          width: "200px",
-          height: "200px",
-          background:
-            "radial-gradient(circle, rgba(255,0,122,0.8) 0%, rgba(161,0,255,0) 70%)",
-          filter: "blur(40px)",
-          top: "20%",
-          left: "30%",
-        }}
-      ></div>
-      <div
-        style={{
-          position: "absolute",
-          width: "300px",
-          height: "300px",
-          background:
-            "radial-gradient(circle, rgba(161,0,255,0.6) 0%, rgba(161,0,255,0) 70%)",
-          filter: "blur(50px)",
-          bottom: "10%",
-          right: "20%",
-        }}
-      ></div>
-      <div
-        style={{
-          fontSize: "1.2rem",
-          color: "rgba(255,255,255,0.7)",
-          zIndex: 2,
-          textAlign: "center",
-          padding: "2rem",
-        }}
-      >
-        <Zap size={48} style={{ marginBottom: "1rem" }} />
-        <p>Your Interactive 3D Profile Preview</p>
-        <p style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
-          (Real models would have an interactive 3D showcase here)
-        </p>
-      </div>
+      {models.map((model, index) => (
+        <motion.div
+          key={index}
+          whileHover={{ y: -10 }}
+          style={{
+            background: "rgba(30, 30, 30, 0.7)",
+            borderRadius: "16px",
+            overflow: "hidden",
+            border: "1px solid rgba(255, 255, 255, 0.1)",
+            backdropFilter: "blur(10px)",
+            boxShadow: "0 10px 30px rgba(0, 0, 0, 0.3)",
+          }}
+        >
+          <div
+            style={{
+              height: "300px",
+              backgroundImage: `url(${model.image})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              position: "relative",
+            }}
+          >
+            <div
+              style={{
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                right: 0,
+                padding: "1.5rem",
+                background:
+                  "linear-gradient(to top, rgba(0,0,0,0.8), transparent)",
+              }}
+            >
+              <h3
+                style={{
+                  fontSize: "1.5rem",
+                  fontWeight: 600,
+                  marginBottom: "0.5rem",
+                  color: "#fff",
+                }}
+              >
+                {model.name}
+              </h3>
+            </div>
+          </div>
+          <div style={{ padding: "1.5rem" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                marginBottom: "1rem",
+              }}
+            >
+              <div>
+                <p style={{ color: "#aaa", fontSize: "0.9rem" }}>Country</p>
+                <p style={{ color: "#fff", fontWeight: 500 }}>
+                  {model.country}
+                </p>
+              </div>
+              <div>
+                <p style={{ color: "#aaa", fontSize: "0.9rem" }}>Age</p>
+                <p style={{ color: "#fff", fontWeight: 500 }}>{model.age}</p>
+              </div>
+            </div>
+            <motion.a
+              href={model.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              style={{
+                display: "block",
+                textAlign: "center",
+                padding: "0.8rem",
+                borderRadius: "8px",
+                background: "linear-gradient(45deg, #ff007a, #a100ff)",
+                color: "#fff",
+                fontWeight: 600,
+                textDecoration: "none",
+                marginTop: "1rem",
+              }}
+            >
+              View Scrile Profile
+            </motion.a>
+          </div>
+        </motion.div>
+      ))}
     </div>
   );
 };
@@ -593,15 +619,16 @@ const MobileMenu = ({
 };
 
 // Translation content
+// Updated translation content
 const content = {
   en: {
     hero: {
       title: "Your Brand. Your Rules.\nWe Build It — You Own It.",
       subtitle:
-        "Create your own platform, earn 100%, stay private, and grow with a team behind you.",
+        "Create your own platform, earn directly from your fans, stay private, and grow with a team behind you.",
       cta1: "Become a Model",
       cta2: "Explore Benefits",
-      cta3: "Join the Agency",
+      cta3: "Explore More",
     },
     about: {
       title: "About Global Fan Flicks",
@@ -617,7 +644,7 @@ const content = {
         },
         {
           icon: <DollarSign size={20} />,
-          text: "Full earnings — no platform cuts",
+          text: "Higher earnings than other platforms",
         },
         {
           icon: <Shield size={20} />,
@@ -629,7 +656,7 @@ const content = {
         },
         {
           icon: <BarChart2 size={20} />,
-          text: "We grow your fanbase (Reddit, TikTok, Telegram)",
+          text: "We grow your fanbase (Reddit, TikTok, Telegram, Twitter, Instagram)",
         },
         {
           icon: <UserPlus size={20} />,
@@ -656,8 +683,9 @@ const content = {
       ],
     },
     models: {
-      title: "Meet Our Featured Models",
-      subtitle: "These creators trusted us to build their brands",
+      title: "Imagine Success",
+      subtitle:
+        "Creators are building brands around the world creating global fans",
     },
     apply: {
       title: "Apply to Join",
@@ -668,7 +696,9 @@ const content = {
         country: "Country",
         comfort: "Comfort Level",
         links: "Links (Instagram, TikTok)",
+        email: "Email Address",
         telegram: "Telegram Username",
+        whatsapp: "WhatsApp Number",
         submit: "Submit Application",
       },
     },
@@ -681,9 +711,9 @@ const content = {
             "Yes! Many of our models use AI overlays or soft content only. We provide advanced privacy tools to protect your identity while maximizing your earnings.",
         },
         {
-          question: "Do I keep 100% of earnings?",
+          question: "What percentage do I earn?",
           answer:
-            "Absolutely — we take zero platform cut. You own your content and receive direct payments from your subscribers with no middleman.",
+            "You earn significantly more than traditional platforms. While we don't take a percentage like other sites, we do charge a reasonable fee for our full-service management, profile creation, and marketing campaigns.",
         },
         {
           question: "How long to get approved?",
@@ -705,9 +735,9 @@ const content = {
     stats: {
       title: "Why Models Choose Us",
       items: [
-        { value: 100, label: "Earnings Kept", suffix: "%" },
+        { value: 90, display: "80+%", label: "Earnings Kept", suffix: "%" },
         { value: 48, label: "Approval Time", suffix: "hrs" },
-        { value: 50, label: "Active Creators", suffix: "+" },
+        { value: 2, label: "Featured Creators", suffix: "" },
         { value: 24, label: "Support Response", suffix: "hrs" },
       ],
     },
@@ -715,6 +745,7 @@ const content = {
       title: "Support & Contact",
       email: "je@globalfanflicks.com",
       telegram: "@GlobalFanFlicks",
+      whatsapp: "+1 (555) 123-4567",
     },
     footer: {
       text: "Global Fan Flicks® is a division of The Elite Vibe, LLC",
@@ -725,10 +756,10 @@ const content = {
     hero: {
       title: "Tu marca. Tus reglas.\nNosotros lo construimos — Tú lo posees.",
       subtitle:
-        "Crea tu propia plataforma, gana el 100%, mantén tu privacidad y crece con un equipo detrás de ti.",
+        "Crea tu propia plataforma, gana directamente de tus fans, mantén tu privacidad y crece con un equipo detrás de ti.",
       cta1: "Conviértete en Modelo",
       cta2: "Explora Beneficios",
-      cta3: "Únete a la Agencia",
+      cta3: "Explora Más",
     },
     about: {
       title: "Acerca de Global Fan Flicks",
@@ -744,7 +775,7 @@ const content = {
         },
         {
           icon: <DollarSign size={20} />,
-          text: "Ganancias completas — sin cortes de plataforma",
+          text: "Ganancias más altas que otras plataformas",
         },
         {
           icon: <Shield size={20} />,
@@ -756,7 +787,7 @@ const content = {
         },
         {
           icon: <BarChart2 size={20} />,
-          text: "Hacemos crecer tu base de fans (Reddit, TikTok, Telegram)",
+          text: "Hacemos crecer tu base de fans (Reddit, TikTok, Telegram, Twitter, Instagram)",
         },
         {
           icon: <UserPlus size={20} />,
@@ -786,9 +817,9 @@ const content = {
       ],
     },
     models: {
-      title: "Conoce a Nuestras Modelos Destacadas",
+      title: "Imagina el Éxito",
       subtitle:
-        "Estas creadoras confiaron en nosotros para construir sus marcas",
+        "Los creadores están construyendo marcas en todo el mundo creando fans globales",
     },
     apply: {
       title: "Solicita Unirte",
@@ -799,7 +830,9 @@ const content = {
         country: "País",
         comfort: "Nivel de comodidad",
         links: "Enlaces (Instagram, TikTok)",
+        email: "Correo Electrónico",
         telegram: "Usuario de Telegram",
+        whatsapp: "Número de WhatsApp",
         submit: "Enviar solicitud",
       },
     },
@@ -812,9 +845,9 @@ const content = {
             "¡Sí! Muchas de nuestras modelos usan superposiciones de IA o solo contenido suave. Proporcionamos herramientas avanzadas de privacidad para proteger tu identidad mientras maximizas tus ganancias.",
         },
         {
-          question: "¿Me quedo con el 100% de las ganancias?",
+          question: "¿Qué porcentaje gano?",
           answer:
-            "Absolutamente — no tomamos ningún porcentaje de la plataforma. Eres dueña de tu contenido y recibes pagos directos de tus suscriptores sin intermediarios.",
+            "Ganas significativamente más que en plataformas tradicionales. Si bien no tomamos un porcentaje como otros sitios, cobramos una tarifa razonable por nuestra gestión de servicio completo, creación de perfiles y campañas de marketing.",
         },
         {
           question: "¿Cuánto tiempo tarda la aprobación?",
@@ -836,9 +869,9 @@ const content = {
     stats: {
       title: "Por qué las modelos nos eligen",
       items: [
-        { value: 100, label: "Ganancias conservadas", suffix: "%" },
+        { value: 90, display: "80+%", label: "Ganancias conservadas", suffix: "%" },
         { value: 48, label: "Tiempo de aprobación", suffix: "hrs" },
-        { value: 5000, label: "Creadoras activas", suffix: "+" },
+        { value: 2, label: "Creadoras destacadas", suffix: "" },
         { value: 24, label: "Respuesta de soporte", suffix: "hrs" },
       ],
     },
@@ -846,6 +879,7 @@ const content = {
       title: "Soporte y Contacto",
       email: "soporte@globalfanflicks.com",
       telegram: "@GlobalFanFlicks",
+      whatsapp: "+1 (555) 123-4567",
     },
     footer: {
       text: "Global Fan Flicks® es una división de The Elite Vibe, LLC",
@@ -919,13 +953,16 @@ const Button = ({
 };
 
 // Updated ApplyForm component with proper typing
+// Updated ApplyForm component with WhatsApp and email fields
 interface FormData {
   name: string;
   age: number;
   country: string;
   comfort?: string;
   links?: string;
+  email: string;
   telegram: string;
+  whatsapp?: string;
 }
 
 const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
@@ -934,13 +971,12 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
     handleSubmit,
     reset,
     formState: { isSubmitting },
-  } = useForm<FormData>(); // Add type parameter to useForm
+  } = useForm<FormData>();
   const formContent = content[lang].apply.form;
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const sendToTelegram = async (data: FormData) => {
-    // Replaced any with FormData
     const botToken = "7643344349:AAEi7fqqfbXxro8KfJh1M_Heks42DNGfbSY";
     const chatId = "@GlobalFanFlicks";
 
@@ -949,9 +985,11 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
 *Name (Stage):* ${data.name}
 *Age:* ${data.age}
 *Country:* ${data.country}
+*Email:* ${data.email}
 *Comfort Level:* ${data.comfort || "Not specified"}
 *Social Links:* ${data.links || "Not provided"}
 *Telegram Username:* @${data.telegram}
+*WhatsApp:* ${data.whatsapp || "Not provided"}
     `;
 
     try {
@@ -980,14 +1018,12 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
 
       return true;
     } catch (error) {
-      // Changed err to error and using it
       console.error("Telegram API error:", error);
       throw error;
     }
   };
 
   const onSubmit = async (data: FormData) => {
-    // Replaced any with FormData
     setError(null);
 
     try {
@@ -997,8 +1033,7 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
       reset();
       setTimeout(() => setIsSubmitted(false), 5000);
     } catch (error) {
-      // Changed err to error
-      console.error("Submission error:", error); // Now using the error
+      console.error("Submission error:", error);
       setError(
         lang === "en"
           ? "Failed to submit application. Please contact us directly on Telegram."
@@ -1006,6 +1041,7 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
       );
     }
   };
+
   return (
     <GradientCard
       style={{ maxWidth: 500, margin: "0 auto", textAlign: "left" }}
@@ -1166,6 +1202,31 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
                 color: "#aaa",
               }}
             >
+              {formContent.email}:
+            </span>
+            <input
+              type="email"
+              {...register("email", { required: true })}
+              style={{
+                width: "100%",
+                padding: "0.8rem",
+                borderRadius: "8px",
+                border: "1px solid rgba(255,255,255,0.1)",
+                background: "rgba(20,20,20,0.5)",
+                color: "#fff",
+                fontSize: "1rem",
+              }}
+            />
+          </label>
+
+          <label style={{ display: "block", marginBottom: "1.5rem" }}>
+            <span
+              style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                color: "#aaa",
+              }}
+            >
               {formContent.comfort}:
             </span>
             <input
@@ -1206,7 +1267,7 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
             />
           </label>
 
-          <label style={{ display: "block", marginBottom: "2rem" }}>
+          <label style={{ display: "block", marginBottom: "1.5rem" }}>
             <span
               style={{
                 display: "block",
@@ -1244,6 +1305,33 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
                 }}
               />
             </div>
+          </label>
+
+          <label style={{ display: "block", marginBottom: "2rem" }}>
+            <span
+              style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                color: "#aaa",
+              }}
+            >
+              {formContent.whatsapp}:
+            </span>
+            <input
+              {...register("whatsapp")}
+              style={{
+                width: "100%",
+                padding: "0.8rem",
+                borderRadius: "8px",
+                border: "1px solid rgba(255,255,255,0.1)",
+                background: "rgba(20,20,20,0.5)",
+                color: "#fff",
+                fontSize: "1rem",
+              }}
+              placeholder={
+                lang === "en" ? "e.g. +1234567890" : "ej. +1234567890"
+              }
+            />
           </label>
 
           <motion.button
@@ -1378,7 +1466,7 @@ export default function Home() {
           overflowX: "hidden",
         }}
       >
-        {/* Animated Background Elements */}
+        {/* Animated Background Elements - Hydration-Safe Version */}
         <div
           style={{
             position: "fixed",
@@ -1390,36 +1478,53 @@ export default function Home() {
             overflow: "hidden",
           }}
         >
-          {[...Array(10)].map((_, i) => (
-            <motion.div
-              key={i}
-              initial={{
-                x: Math.random() * 100,
-                y: Math.random() * 100,
-                opacity: 0.1,
-                scale: Math.random() * 0.5 + 0.5,
-              }}
-              animate={{
-                x: [null, Math.random() * 100 - 50],
-                y: [null, Math.random() * 100 - 50],
-                transition: {
-                  duration: Math.random() * 20 + 10,
-                  repeat: Infinity,
-                  repeatType: "reverse",
-                },
-              }}
-              style={{
-                position: "absolute",
-                width: "1px",
-                height: "1px",
-                borderRadius: "50%",
-                background: "rgba(255,255,255,0.2)",
-                boxShadow: `0 0 ${Math.random() * 50 + 50}px ${
-                  Math.random() * 20 + 10
-                }px rgba(161, 0, 255, 0.5)`,
-              }}
-            />
-          ))}
+          {typeof window === "undefined"
+            ? null
+            : [...Array(10)].map((_, i) => {
+                // Generate stable random values based on index
+                const stableRandom = (seed: number) => {
+                  const x = Math.sin(i + seed) * 10000;
+                  return x - Math.floor(x);
+                };
+
+                const initialX = stableRandom(1) * 100;
+                const initialY = stableRandom(2) * 100;
+                const initialScale = stableRandom(3) * 0.5 + 0.5;
+                const targetX = stableRandom(4) * 100 - 50;
+                const targetY = stableRandom(5) * 100 - 50;
+                const duration = stableRandom(6) * 20 + 10;
+                const shadowSize = stableRandom(7) * 50 + 50;
+                const shadowSpread = stableRandom(8) * 20 + 10;
+
+                return (
+                  <motion.div
+                    key={i}
+                    initial={{
+                      x: initialX,
+                      y: initialY,
+                      opacity: 0.1,
+                      scale: initialScale,
+                    }}
+                    animate={{
+                      x: [null, targetX],
+                      y: [null, targetY],
+                      transition: {
+                        duration: duration,
+                        repeat: Infinity,
+                        repeatType: "reverse",
+                      },
+                    }}
+                    style={{
+                      position: "absolute",
+                      width: "1px",
+                      height: "1px",
+                      borderRadius: "50%",
+                      background: "rgba(255,255,255,0.2)",
+                      boxShadow: `0 0 ${shadowSize}px ${shadowSpread}px rgba(161, 0, 255, 0.5)`,
+                    }}
+                  />
+                );
+              })}
         </div>
 
         <LanguageToggle currentLang={lang} onChange={setLang} />
@@ -1455,6 +1560,96 @@ export default function Home() {
           lang={lang}
           setLang={setLang}
         />
+
+        {/* Futuristic Logo - Add this right after the MobileMenu button */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{
+            opacity: 1,
+            scale: 1,
+            boxShadow: [
+              "0 0 10px rgba(161, 0, 255, 0.5)",
+              "0 0 20px rgba(161, 0, 255, 0.7)",
+              "0 0 10px rgba(161, 0, 255, 0.5)",
+            ],
+          }}
+          transition={{
+            delay: 0.5,
+            boxShadow: {
+              duration: 2,
+              repeat: Infinity,
+              repeatType: "reverse",
+            },
+          }}
+          whileHover={{
+            scale: 1.1,
+            boxShadow: "0 0 30px rgba(161, 0, 255, 0.8)",
+          }}
+          style={{
+            position: "fixed",
+            top: "1.5rem",
+            left: "calc(50% - 30px)", // Adjusted to account for exact half of width
+            zIndex: 998,
+            width: "60px",
+            height: "60px",
+            borderRadius: "50%",
+            overflow: "hidden",
+            border: "2px solid rgba(161, 0, 255, 0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "rgba(20, 20, 20, 0.7)",
+            backdropFilter: "blur(10px)",
+            boxShadow:
+              "0 0 0 2px rgba(161, 0, 255, 0.3), 0 0 20px rgba(161, 0, 255, 0.5)",
+            cursor: "pointer",
+            // Ensure it stays centered regardless of other elements
+            margin: "0 auto",
+            // Mobile-specific adjustments
+            "@media (max-width: 768px)": {
+              left: "50%",
+              transform: "translateX(-50%)",
+              marginLeft: "0",
+            },
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              top: "-10px",
+              left: "-10px",
+              right: "-10px",
+              bottom: "-10px",
+              borderRadius: "50%",
+              background:
+                "radial-gradient(circle, rgba(161, 0, 255, 0.2) 0%, transparent 70%)",
+              zIndex: -1,
+            }}
+          />
+
+          <div
+            style={{
+              width: "90%",
+              height: "90%",
+              borderRadius: "50%",
+              overflow: "hidden",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <img
+              src="/images/logo.png" // Change this to your logo path
+              alt="Logo"
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                objectPosition: "center",
+              }}
+            />
+          </div>
+        </motion.div>
 
         {/* HERO SECTION */}
         <motion.section
@@ -1574,23 +1769,35 @@ export default function Home() {
               <Button
                 icon={<Globe size={20} />}
                 text={currentContent.hero.cta3}
-                onClick={() =>
-                  window.open("https://t.me/GlobalFanFlicksOfficial", "_blank")
-                }
+                onClick={() => {
+                  // Try to open app directly
+                  window.location.href =
+                    "tg://resolve?domain=GlobalFanFlicksOfficial";
+
+                  // If still on page after timeout, redirect to web
+                  setTimeout(() => {
+                    if (!document.hidden) {
+                      window.open(
+                        "https://t.me/GlobalFanFlicksOfficial",
+                        "_blank"
+                      );
+                    }
+                  }, 300);
+                }}
                 variant="ghost"
                 size="large"
               />
             </motion.div>
           </motion.div>
 
-          {/* 3D Model Preview Section */}
+          {/* Profiles Showcase Section (Replacing 3D Model Preview) */}
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1 }}
             style={{ marginTop: "4rem", padding: "0 1rem" }}
           >
-            <Model3DPreview />
+            <ProfilesShowcase />
           </motion.div>
         </motion.section>
 
@@ -2027,6 +2234,7 @@ export default function Home() {
         </motion.section>
 
         {/* CONTACT & FOOTER */}
+        {/* CONTACT & FOOTER */}
         <motion.section
           id="contact"
           initial={{ opacity: 0 }}
@@ -2072,6 +2280,11 @@ export default function Home() {
               <MessageSquare size={20} /> Telegram:{" "}
               {currentContent.contact.telegram}
             </div>
+            <div
+              style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+            >
+              <Phone size={20} /> WhatsApp: {currentContent.contact.whatsapp}
+            </div>
           </div>
 
           <div
@@ -2099,6 +2312,23 @@ export default function Home() {
                 window.open("https://t.me/GlobalFanFlicks", "_blank")
               }
               variant="secondary"
+              size="large"
+            />
+            <Button
+              icon={<Phone size={20} />}
+              text={
+                lang === "en" ? "Message on WhatsApp" : "Mensaje por WhatsApp"
+              }
+              onClick={() =>
+                window.open(
+                  `https://wa.me/${currentContent.contact.whatsapp.replace(
+                    /\D/g,
+                    ""
+                  )}`,
+                  "_blank"
+                )
+              }
+              variant="ghost"
               size="large"
             />
           </div>
