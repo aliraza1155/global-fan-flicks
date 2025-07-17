@@ -1561,95 +1561,90 @@ export default function Home() {
           setLang={setLang}
         />
 
-        {/* Futuristic Logo - Add this right after the MobileMenu button */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{
-            opacity: 1,
-            scale: 1,
-            boxShadow: [
-              "0 0 10px rgba(161, 0, 255, 0.5)",
-              "0 0 20px rgba(161, 0, 255, 0.7)",
-              "0 0 10px rgba(161, 0, 255, 0.5)",
-            ],
-          }}
-          transition={{
-            delay: 0.5,
-            boxShadow: {
-              duration: 2,
-              repeat: Infinity,
-              repeatType: "reverse",
-            },
-          }}
-          whileHover={{
-            scale: 1.1,
-            boxShadow: "0 0 30px rgba(161, 0, 255, 0.8)",
-          }}
-          style={{
-            position: "fixed",
-            top: "1.5rem",
-            left: "calc(50% - 30px)", // Adjusted to account for exact half of width
-            zIndex: 998,
-            width: "60px",
-            height: "60px",
-            borderRadius: "50%",
-            overflow: "hidden",
-            border: "2px solid rgba(161, 0, 255, 0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            background: "rgba(20, 20, 20, 0.7)",
-            backdropFilter: "blur(10px)",
-            boxShadow:
-              "0 0 0 2px rgba(161, 0, 255, 0.3), 0 0 20px rgba(161, 0, 255, 0.5)",
-            cursor: "pointer",
-            // Ensure it stays centered regardless of other elements
-            margin: "0 auto",
-            // Mobile-specific adjustments
-            "@media (max-width: 768px)": {
-              left: "50%",
-              transform: "translateX(-50%)",
-              marginLeft: "0",
-            },
-          }}
-        >
-          <div
-            style={{
-              position: "absolute",
-              top: "-10px",
-              left: "-10px",
-              right: "-10px",
-              bottom: "-10px",
-              borderRadius: "50%",
-              background:
-                "radial-gradient(circle, rgba(161, 0, 255, 0.2) 0%, transparent 70%)",
-              zIndex: -1,
-            }}
-          />
+       {/* Futuristic Logo - Add this right after the MobileMenu button */}
+<motion.div
+  initial={{ opacity: 0, scale: 0.8 }}
+  animate={{
+    opacity: 1,
+    scale: 1,
+    boxShadow: [
+      "0 0 10px rgba(161, 0, 255, 0.5)",
+      "0 0 20px rgba(161, 0, 255, 0.7)",
+      "0 0 10px rgba(161, 0, 255, 0.5)",
+    ],
+  }}
+  transition={{
+    delay: 0.5,
+    boxShadow: {
+      duration: 2,
+      repeat: Infinity,
+      repeatType: "reverse",
+    },
+  }}
+  whileHover={{
+    scale: 1.1,
+    boxShadow: "0 0 30px rgba(161, 0, 255, 0.8)",
+  }}
+  className="futuristic-logo"
+  style={{
+    position: "fixed",
+    top: "1.5rem",
+    left: "calc(50% - 30px)",
+    zIndex: 998,
+    width: "60px",
+    height: "60px",
+    borderRadius: "50%",
+    overflow: "hidden",
+    border: "2px solid rgba(161, 0, 255, 0.5)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    background: "rgba(20, 20, 20, 0.7)",
+    backdropFilter: "blur(10px)",
+    boxShadow:
+      "0 0 0 2px rgba(161, 0, 255, 0.3), 0 0 20px rgba(161, 0, 255, 0.5)",
+    cursor: "pointer",
+    margin: "0 auto",
+  }}
+>
+  <div
+    style={{
+      position: "absolute",
+      top: "-10px",
+      left: "-10px",
+      right: "-10px",
+      bottom: "-10px",
+      borderRadius: "50%",
+      background:
+        "radial-gradient(circle, rgba(161, 0, 255, 0.2) 0%, transparent 70%)",
+      zIndex: -1,
+    }}
+  />
 
-          <div
-            style={{
-              width: "90%",
-              height: "90%",
-              borderRadius: "50%",
-              overflow: "hidden",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <img
-              src="/images/logo.png" // Change this to your logo path
-              alt="Logo"
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                objectPosition: "center",
-              }}
-            />
-          </div>
-        </motion.div>
+  <div
+    style={{
+      width: "90%",
+      height: "90%",
+      borderRadius: "50%",
+      overflow: "hidden",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    }}
+  >
+    <img
+      src="/images/logo.png" // Change this to your logo path
+      alt="Logo"
+      style={{
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+        objectPosition: "center",
+      }}
+    />
+  </div>
+</motion.div>
+
 
         {/* HERO SECTION */}
         <motion.section

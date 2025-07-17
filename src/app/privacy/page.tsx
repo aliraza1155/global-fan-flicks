@@ -1,5 +1,5 @@
 'use client';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion} from 'framer-motion';
 import Link from 'next/link';
 import { 
   ArrowLeft, 
@@ -12,7 +12,7 @@ import {
   MessageSquare,
   Check,
   Settings,
-  ChevronDown
+  // ChevronDown
 } from 'lucide-react';
 import { useState } from 'react';
 
