@@ -1,8 +1,8 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useForm } from "react-hook-form";
-import { useState, useEffect } from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { useState, useEffect, useRef } from "react";
 import {
   Globe,
   Rocket,
@@ -26,203 +26,314 @@ import {
 } from "lucide-react";
 import Head from "next/head";
 import Link from "next/link";
+import Image from "next/image";
 
-// Updated model data with only 2 models
-// Updated model data with Ana and Evely from Colombia
-const modelData = [
+// Global Models Data
+const globalModels = [
   {
     id: 1,
-    name: "Ana",
-    category: "Fitness",
-    country: "Colombia",
-    image: "/images/Ana-model-image.jpg",
+    name: "Ashley",
+    category: "Glamour",
+    country: "USA 🇺🇸",
+    location: "Los Angeles",
+    image: "/images/Ashley-model-image.png",
+    bio: "Glamour queen from Los Angeles with a bold heart and seductive eyes.",
   },
   {
     id: 2,
-    name: "Evely",
-    category: "Glamour",
-    country: "Colombia",
-    image: "/images/Evely-model-image.jpg",
+    name: "Amélie",
+    category: "Fashion",
+    country: "France 🇫🇷",
+    location: "Paris",
+    image: "/images/Amelie-model-image.png",
+    bio: "Parisian elegance with sensual curves and bold style.",
+  },
+  {
+    id: 3,
+    name: "Malia",
+    category: "Tropical Exotic",
+    country: "Fiji 🇫🇯",
+    location: "Coral Coast",
+    image: "/images/Malia-model-image.jpg",
+    bio: "Island breeze and fierce grace — Malia brings the tropics to life.",
+  },
+  {
+    id: 4,
+    name: "Camila",
+    category: "Fitness",
+    country: "Brazil 🇧🇷",
+    location: "Rio de Janeiro",
+    image: "/images/Camila-model-image.png",
+    bio: "Rio’s hottest — passion, rhythm, and fire in every curve.",
+  },
+  {
+    id: 5,
+    name: "Jisoo",
+    category: "Faceless AI",
+    country: "South Korea 🇰🇷",
+    location: "Seoul",
+    image: "/images/Jisoo-model-image.png",
+    bio: "Seoul's beauty — innocence with a secret fire.",
+  },
+  {
+    id: 6,
+    name: "Anastasia",
+    category: "Elegant",
+    country: "Russia 🇷🇺",
+    location: "Moscow",
+    image: "/images/Anastasia-model-image.png",
+    bio: "From Moscow with ice-cold eyes and fire in her pose.",
+  },
+  {
+    id: 7,
+    name: "Priya",
+    category: "Traditional",
+    country: "India 🇮🇳",
+    location: "Mumbai",
+    image: "/images/Priya-model-image.png",
+    bio: "Traditional roots, modern fire — bold and graceful.",
+  },
+  {
+    id: 8,
+    name: "Chloe",
+    category: "Beach",
+    country: "Australia 🇦🇺",
+    location: "Gold Coast",
+    image: "/images/Chloe-model-image.png",
+    bio: "Sun-kissed Aussie babe with endless curves and confidence.",
+  },
+  {
+    id: 9,
+    name: "Sakura",
+    category: "Cultural",
+    country: "Japan 🇯🇵",
+    location: "Tokyo",
+    image: "/images/Sakura-model-image.png",
+    bio: "A modern twist on timeless Tokyo elegance.",
+  },
+
+  {
+    id: 10,
+    name: "Isla",
+    category: "Tropical",
+    country: "Australia 🇦🇺",
+    location: "Whitsunday Islands",
+    image: "/images/Isla-model-image.png",
+    bio: "Golden-hour glow and tropical fire — Isla owns every wave she walks past.",
+  },
+  {
+    id: 11,
+    name: "Hana",
+    category: "Urban Chic",
+    country: "South Korea 🇰🇷",
+    location: "Busan",
+    image: "/images/Hana-model-iamge.jpg",
+    bio: "Bold attitude meets flawless beauty — Hana redefines Korean edge.",
+  },
+  {
+    id: 12,
+    name: "Zara",
+    category: "Beach Exotic",
+    country: "Jamaica 🇯🇲",
+    location: "Montego Bay",
+    image: "/images/Zara-model-image.jpg",
+    bio: "Sun-drenched curves and island soul — Zara lights up every shoreline.",
+  },
+  {
+    id: 13,
+    name: "Natalya",
+    category: "Ice Queen",
+    country: "Russia 🇷🇺",
+    location: "Saint Petersburg",
+    image: "/images/Natalya-model-image.jpg",
+    bio: "Snow-kissed elegance with a mysterious gaze — Natalya owns the frost.",
   },
 ];
 
-// Profiles Showcase Component (Replacing 3D Model Preview)
-const ProfilesShowcase = () => {
-  const models = [
-    {
-      name: "Ana",
-      country: "Brazil",
-      age: 24,
-      link: "https://scrile.com/ana-model",
-      image: "/images/Ana-model-image.jpg", // Assuming the image is in the public folder
-    },
-    {
-      name: "Evely",
-      country: "USA",
-      age: 22,
-      link: "https://scrile.com/evely-model",
-      image: "images/Evely-model-image.jpg", // Assuming the image is in the public folder
-    },
-  ];
-
+// Global Models Showcase Component
+const GlobalModelsShowcase = ({ lang }: { lang: "en" | "es" }) => {
   return (
-    <div
-      style={{
-        width: "100%",
-        padding: "2rem 0",
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-        gap: "2rem",
-        margin: "2rem 0",
-      }}
-    >
-      {models.map((model, index) => (
-        <motion.div
-          key={index}
-          whileHover={{ y: -10 }}
-          style={{
-            background: "rgba(30, 30, 30, 0.7)",
-            borderRadius: "16px",
-            overflow: "hidden",
-            border: "1px solid rgba(255, 255, 255, 0.1)",
-            backdropFilter: "blur(10px)",
-            boxShadow: "0 10px 30px rgba(0, 0, 0, 0.3)",
-          }}
-        >
-          <div
+    <div style={{ width: "100%", padding: "2rem 0" }}>
+      <h3
+        style={{
+          fontSize: "1.8rem",
+          fontWeight: 600,
+          marginBottom: "1.5rem",
+          background: "linear-gradient(90deg, #ff007a, #a100ff)",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+        }}
+      >
+        {lang === "en"
+          ? "🌍 Global Models. Global Reach."
+          : "🌍 Modelos Globales. Alcance Global."}
+      </h3>
+      <p style={{ color: "#ccc", maxWidth: "800px", margin: "0 auto 2rem" }}>
+        {lang === "en"
+          ? "Our creators come from every corner of the world — and rule their platforms with style, power, and purpose."
+          : "Nuestros creadores vienen de todos los rincones del mundo y dominan sus plataformas con estilo, poder y propósito."}
+      </p>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+          gap: "1.5rem",
+          margin: "2rem 0",
+        }}
+      >
+        {globalModels.map((model) => (
+          <motion.div
+            key={model.id}
+            whileHover={{ y: -10 }}
             style={{
-              height: "300px",
-              backgroundImage: `url(${model.image})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              position: "relative",
+              background: "rgba(30, 30, 30, 0.7)",
+              borderRadius: "16px",
+              overflow: "hidden",
+              border: "1px solid rgba(255, 255, 255, 0.1)",
+              backdropFilter: "blur(10px)",
+              boxShadow: "0 10px 30px rgba(0, 0, 0, 0.3)",
             }}
           >
             <div
               style={{
-                position: "absolute",
-                bottom: 0,
-                left: 0,
-                right: 0,
-                padding: "1.5rem",
-                background:
-                  "linear-gradient(to top, rgba(0,0,0,0.8), transparent)",
+                height: "300px",
+                backgroundImage: `url(${model.image})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                position: "relative",
               }}
             >
-              <h3
+              <div
                 style={{
-                  fontSize: "1.5rem",
-                  fontWeight: 600,
-                  marginBottom: "0.5rem",
-                  color: "#fff",
+                  position: "absolute",
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  padding: "1.5rem",
+                  background:
+                    "linear-gradient(to top, rgba(0,0,0,0.8), transparent)",
                 }}
               >
-                {model.name}
-              </h3>
-            </div>
-          </div>
-          <div style={{ padding: "1.5rem" }}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                marginBottom: "1rem",
-              }}
-            >
-              <div>
-                <p style={{ color: "#aaa", fontSize: "0.9rem" }}>Country</p>
-                <p style={{ color: "#fff", fontWeight: 500 }}>
-                  {model.country}
+                <h3
+                  style={{
+                    fontSize: "1.5rem",
+                    fontWeight: 600,
+                    marginBottom: "0.5rem",
+                    color: "#fff",
+                  }}
+                >
+                  {model.name}
+                </h3>
+                <p style={{ color: "#aaa" }}>
+                  {model.category} • {model.location}
                 </p>
               </div>
-              <div>
-                <p style={{ color: "#aaa", fontSize: "0.9rem" }}>Age</p>
-                <p style={{ color: "#fff", fontWeight: 500 }}>{model.age}</p>
-              </div>
             </div>
-            <motion.a
-              href={model.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              style={{
-                display: "block",
-                textAlign: "center",
-                padding: "0.8rem",
-                borderRadius: "8px",
-                background: "linear-gradient(45deg, #ff007a, #a100ff)",
-                color: "#fff",
-                fontWeight: 600,
-                textDecoration: "none",
-                marginTop: "1rem",
-              }}
-            >
-              View Scrile Profile
-            </motion.a>
-          </div>
-        </motion.div>
-      ))}
+          </motion.div>
+        ))}
+      </div>
     </div>
   );
 };
 
-// Animated Stats Component
-const StatsCounter = ({
-  target,
-  label,
-  suffix = "",
-}: {
-  target: number;
-  label: string;
-  suffix?: string;
-}) => {
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    const duration = 2000; // Animation duration in ms
-    const startTime = performance.now();
-    const startValue = 0;
-    const endValue = target;
-
-    const animate = (currentTime: number) => {
-      const elapsedTime = currentTime - startTime;
-      const progress = Math.min(elapsedTime / duration, 1);
-      const currentCount = Math.floor(
-        progress * (endValue - startValue) + startValue
-      );
-
-      setCount(currentCount);
-
-      if (progress < 1) {
-        requestAnimationFrame(animate);
-      }
-    };
-
-    requestAnimationFrame(animate);
-  }, [target]);
+// Why Models Rule Section
+const WhyModelsRule = ({ lang }: { lang: "en" | "es" }) => {
+  const items = [
+    {
+      icon: "👑",
+      title:
+        lang === "en"
+          ? "Models Are the Priority"
+          : "Las Modelos Son la Prioridad",
+      text:
+        lang === "en"
+          ? "This is their domain—where their talent sets the tone."
+          : "Este es su dominio, donde su talento marca el tono.",
+    },
+    {
+      icon: "💥",
+      title: lang === "en" ? "Confidence & Power" : "Confianza y Poder",
+      text:
+        lang === "en"
+          ? "We walk in, we own it. Because here? We rule."
+          : "Entramos, lo poseemos. Porque aquí? Nosotras mandamos.",
+    },
+    {
+      icon: "📈",
+      title:
+        lang === "en"
+          ? "A Place to Build Careers"
+          : "Un Lugar para Construir Carreras",
+      text:
+        lang === "en"
+          ? "Where ambition meets opportunity."
+          : "Donde la ambición se encuentra con la oportunidad.",
+    },
+    {
+      icon: "🤝",
+      title:
+        lang === "en" ? "Respect & Representation" : "Respeto y Representación",
+      text:
+        lang === "en"
+          ? "We uplift, protect, and partner with our creators."
+          : "Elevamos, protegemos y colaboramos con nuestros creadores.",
+    },
+  ];
 
   return (
-    <div style={{ textAlign: "center", margin: "1rem" }}>
-      <motion.div
-        initial={{ scale: 0.8 }}
-        animate={{ scale: 1 }}
-        transition={{ type: "spring", stiffness: 100 }}
-        key={count}
+    <motion.section style={{ ...sectionStyle, padding: "4rem 1.5rem" }}>
+      <p style={subheadingStyle}>
+        {lang === "en"
+          ? "👑 Why Models Rule Here"
+          : "👑 Por Qué Las Modelos Mandan Aquí"}
+      </p>
+      <h2 style={headingStyle}>
+        {lang === "en"
+          ? "High-Standard, High-Impact Vibe"
+          : "Ambiente de Alto Nivel y Alto Impacto"}
+      </h2>
+
+      <div
         style={{
-          fontSize: "2.5rem",
-          fontWeight: "bold",
-          background: "linear-gradient(90deg, #ff007a, #a100ff)",
-          WebkitBackgroundClip: "text",
-          WebkitTextFillColor: "transparent",
-          marginBottom: "0.5rem",
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+          gap: "1.5rem",
+          margin: "3rem auto",
+          maxWidth: "1000px",
         }}
       >
-        {count}
-        {suffix}
-      </motion.div>
-      <div style={{ color: "#aaa", fontSize: "0.9rem" }}>{label}</div>
-    </div>
+        {items.map((item, index) => (
+          <motion.div key={index} whileHover={{ y: -5 }}>
+            <GradientCard
+              style={{ height: "100%", padding: "1.5rem", textAlign: "center" }}
+            >
+              <div
+                style={{
+                  fontSize: "2.5rem",
+                  marginBottom: "1rem",
+                }}
+              >
+                {item.icon}
+              </div>
+              <h3
+                style={{
+                  fontSize: "1.3rem",
+                  fontWeight: 600,
+                  marginBottom: "0.5rem",
+                  background: "linear-gradient(90deg, #fff, #aaa)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                {item.title}
+              </h3>
+              <p style={{ color: "#aaa" }}>{item.text}</p>
+            </GradientCard>
+          </motion.div>
+        ))}
+      </div>
+    </motion.section>
   );
 };
 
@@ -353,19 +464,24 @@ const FAQItem = ({
   );
 };
 
-// Language toggle component with animations
+// Language toggle component
 const LanguageToggle = ({
   currentLang,
   onChange,
+  visible,
 }: {
   currentLang: "en" | "es";
   onChange: (lang: "en" | "es") => void;
+  visible: boolean;
 }) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.5 }}
+      animate={{
+        opacity: visible ? 1 : 0,
+        y: visible ? 0 : -20,
+      }}
+      transition={{ duration: 0.3 }}
       style={{
         position: "fixed",
         top: "1.5rem",
@@ -426,6 +542,68 @@ const LanguageToggle = ({
   );
 };
 
+
+// Logo Component with scroll behavior
+const Logo = ({ visible }: { visible: boolean }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{
+        opacity: visible ? 1 : 0,
+        scale: visible ? 1 : 0.8,
+        boxShadow: visible
+          ? [
+              "0 0 12px rgba(161, 0, 255, 0.4)",
+              "0 0 24px rgba(161, 0, 255, 0.6)",
+              "0 0 12px rgba(161, 0, 255, 0.4)",
+            ]
+          : "none",
+      }}
+      transition={{
+        duration: 0.3,
+        boxShadow: {
+          duration: 2,
+          repeat: Infinity,
+          repeatType: "reverse",
+        },
+      }}
+      whileHover={{
+        scale: 1.1,
+        boxShadow: "0 0 36px rgba(161, 0, 255, 0.7)",
+      }}
+      style={{
+        position: "fixed",
+        top: "1.5rem",
+        left: "50%",
+        transform: "translateX(-50%)",
+        zIndex: 998,
+        width: "clamp(50px, 8vw, 70px)",
+        height: "clamp(50px, 8vw, 70px)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        pointerEvents: "none",
+        borderRadius: "50%", // 🔥 added
+        overflow: "hidden", // 🔥 added
+      }}
+    >
+      <Image
+  src="/images/logo.png"
+  alt="Global Fan Flicks"
+  width={70}
+  height={70}
+  style={{
+    width: "100%",
+    height: "100%",
+    objectFit: "contain",
+    filter: "drop-shadow(0 0 8px rgba(161, 0, 255, 0.5))",
+    userSelect: "none",
+  }}
+/>
+    </motion.div>
+  );
+};
+
 // Mobile Menu Component
 const MobileMenu = ({
   isOpen,
@@ -438,8 +616,6 @@ const MobileMenu = ({
   lang: "en" | "es";
   setLang: (lang: "en" | "es") => void;
 }) => {
-  // const currentContent = content[lang];
-
   return (
     <AnimatePresence>
       {isOpen && (
@@ -618,277 +794,7 @@ const MobileMenu = ({
   );
 };
 
-// Translation content
-// Updated translation content
-const content = {
-  en: {
-    hero: {
-      title: "Your Brand. Your Rules.\nWe Build It — You Own It.",
-      subtitle:
-        "Create your own platform, earn directly from your fans, stay private, and grow with a team behind you.",
-      cta1: "Become a Model",
-      cta2: "Explore Benefits",
-      cta3: "Explore More",
-    },
-    about: {
-      title: "About Global Fan Flicks",
-      description:
-        "Global Fan Flicks is a division of The Elite Vibe, LLC — built by real creators, digital strategists, and tech experts to empower NSFW and fitness models to launch and own their own platforms. Our mission is simple: creators should earn more, control more, and worry less.",
-    },
-    benefits: {
-      title: "What You Get as a GFF Model",
-      items: [
-        {
-          icon: <Star size={20} />,
-          text: "Your own branded site (hosted on Scrile)",
-        },
-        {
-          icon: <DollarSign size={20} />,
-          text: "Higher earnings than other platforms",
-        },
-        {
-          icon: <Shield size={20} />,
-          text: "Total privacy (faceless options, AI overlays)",
-        },
-        {
-          icon: <Users size={20} />,
-          text: "All content uploads & promotions handled by us",
-        },
-        {
-          icon: <BarChart2 size={20} />,
-          text: "We grow your fanbase (Reddit, TikTok, Telegram, Twitter, Instagram)",
-        },
-        {
-          icon: <UserPlus size={20} />,
-          text: "Human account managers — no bots",
-        },
-        { icon: <Mail size={20} />, text: "Weekly insights & support" },
-        { icon: <Globe size={20} />, text: "Multi-language (EN/ES) community" },
-      ],
-      quote:
-        "You create. We build and grow everything else. Rest, earn, and stay safe — that's our promise.",
-    },
-    howItWorks: {
-      title: "How It Works",
-      steps: [
-        { icon: <UserPlus size={18} />, text: "Apply as a creator" },
-        {
-          icon: <CheckCircle size={18} />,
-          text: "Get approved in 24–48 hours",
-        },
-        { icon: <Rocket size={18} />, text: "Your platform is launched by us" },
-        { icon: <Camera size={18} />, text: "You create content" },
-        { icon: <Zap size={18} />, text: "We promote & manage everything" },
-        { icon: <DollarSign size={18} />, text: "You track & earn" },
-      ],
-    },
-    models: {
-      title: "Imagine Success",
-      subtitle:
-        "Creators are building brands around the world creating global fans",
-    },
-    apply: {
-      title: "Apply to Join",
-      subtitle: "Start your journey in just a few steps",
-      form: {
-        name: "Name (Stage)",
-        age: "Age",
-        country: "Country",
-        comfort: "Comfort Level",
-        links: "Links (Instagram, TikTok)",
-        email: "Email Address",
-        telegram: "Telegram Username",
-        whatsapp: "WhatsApp Number",
-        submit: "Submit Application",
-      },
-    },
-    faqs: {
-      title: "Frequently Asked Questions",
-      items: [
-        {
-          question: "Can I stay faceless?",
-          answer:
-            "Yes! Many of our models use AI overlays or soft content only. We provide advanced privacy tools to protect your identity while maximizing your earnings.",
-        },
-        {
-          question: "What percentage do I earn?",
-          answer:
-            "You earn significantly more than traditional platforms. While we don't take a percentage like other sites, we do charge a reasonable fee for our full-service management, profile creation, and marketing campaigns.",
-        },
-        {
-          question: "How long to get approved?",
-          answer:
-            "Our team reviews applications within 24–48 hours. We prioritize quality and safety for all our creators.",
-        },
-        {
-          question: "Do I need to promote myself?",
-          answer:
-            "No, our expert marketing team handles all promotion across Reddit, TikTok, Telegram and other platforms to grow your audience.",
-        },
-        {
-          question: "What content can I create?",
-          answer:
-            "You have full creative freedom — from fitness and glamour to NSFW content. We'll help you find your niche and maximize earnings.",
-        },
-      ],
-    },
-    stats: {
-      title: "Why Models Choose Us",
-      items: [
-        { value: 90, display: "80+%", label: "Earnings Kept", suffix: "%" },
-        { value: 48, label: "Approval Time", suffix: "hrs" },
-        { value: 2, label: "Featured Creators", suffix: "" },
-        { value: 24, label: "Support Response", suffix: "hrs" },
-      ],
-    },
-    contact: {
-      title: "Support & Contact",
-      email: "je@globalfanflicks.com",
-      telegram: "@GlobalFanFlicks",
-      whatsapp: "+1 (555) 123-4567",
-    },
-    footer: {
-      text: "Global Fan Flicks® is a division of The Elite Vibe, LLC",
-      links: ["Terms", "Privacy", "Telegram"],
-    },
-  },
-  es: {
-    hero: {
-      title: "Tu marca. Tus reglas.\nNosotros lo construimos — Tú lo posees.",
-      subtitle:
-        "Crea tu propia plataforma, gana directamente de tus fans, mantén tu privacidad y crece con un equipo detrás de ti.",
-      cta1: "Conviértete en Modelo",
-      cta2: "Explora Beneficios",
-      cta3: "Explora Más",
-    },
-    about: {
-      title: "Acerca de Global Fan Flicks",
-      description:
-        "Global Fan Flicks es una división de The Elite Vibe, LLC — creada por creadores reales, estrategas digitales y expertos en tecnología para empoderar a modelos NSFW y de fitness para que lancen y posean sus propias plataformas. Nuestra misión es simple: los creadores deberían ganar más, controlar más y preocuparse menos.",
-    },
-    benefits: {
-      title: "Lo que obtienes como modelo GFF",
-      items: [
-        {
-          icon: <Star size={20} />,
-          text: "Tu propio sitio con marca personal (alojado en Scrile)",
-        },
-        {
-          icon: <DollarSign size={20} />,
-          text: "Ganancias más altas que otras plataformas",
-        },
-        {
-          icon: <Shield size={20} />,
-          text: "Privacidad total (opciones sin rostro, superposiciones de IA)",
-        },
-        {
-          icon: <Users size={20} />,
-          text: "Nos encargamos de todas las cargas de contenido y promociones",
-        },
-        {
-          icon: <BarChart2 size={20} />,
-          text: "Hacemos crecer tu base de fans (Reddit, TikTok, Telegram, Twitter, Instagram)",
-        },
-        {
-          icon: <UserPlus size={20} />,
-          text: "Gerentes de cuenta humanos — sin bots",
-        },
-        { icon: <Mail size={20} />, text: "Información y soporte semanal" },
-        { icon: <Globe size={20} />, text: "Comunidad multilingüe (EN/ES)" },
-      ],
-      quote:
-        "Tú creas. Nosotros construimos y hacemos crecer todo lo demás. Descansa, gana y mantente segura — esa es nuestra promesa.",
-    },
-    howItWorks: {
-      title: "Cómo funciona",
-      steps: [
-        { icon: <UserPlus size={18} />, text: "Solicita ser creador" },
-        {
-          icon: <CheckCircle size={18} />,
-          text: "Obtén aprobación en 24–48 horas",
-        },
-        { icon: <Rocket size={18} />, text: "Lanzamos tu plataforma" },
-        { icon: <Camera size={18} />, text: "Tú creas contenido" },
-        {
-          icon: <Zap size={18} />,
-          text: "Nosotros promocionamos y gestionamos todo",
-        },
-        { icon: <DollarSign size={18} />, text: "Tú rastreas y ganas" },
-      ],
-    },
-    models: {
-      title: "Imagina el Éxito",
-      subtitle:
-        "Los creadores están construyendo marcas en todo el mundo creando fans globales",
-    },
-    apply: {
-      title: "Solicita Unirte",
-      subtitle: "Comienza tu viaje en solo unos pasos",
-      form: {
-        name: "Nombre (Artístico)",
-        age: "Edad",
-        country: "País",
-        comfort: "Nivel de comodidad",
-        links: "Enlaces (Instagram, TikTok)",
-        email: "Correo Electrónico",
-        telegram: "Usuario de Telegram",
-        whatsapp: "Número de WhatsApp",
-        submit: "Enviar solicitud",
-      },
-    },
-    faqs: {
-      title: "Preguntas frecuentes",
-      items: [
-        {
-          question: "¿Puedo permanecer sin mostrar mi rostro?",
-          answer:
-            "¡Sí! Muchas de nuestras modelos usan superposiciones de IA o solo contenido suave. Proporcionamos herramientas avanzadas de privacidad para proteger tu identidad mientras maximizas tus ganancias.",
-        },
-        {
-          question: "¿Qué porcentaje gano?",
-          answer:
-            "Ganas significativamente más que en plataformas tradicionales. Si bien no tomamos un porcentaje como otros sitios, cobramos una tarifa razonable por nuestra gestión de servicio completo, creación de perfiles y campañas de marketing.",
-        },
-        {
-          question: "¿Cuánto tiempo tarda la aprobación?",
-          answer:
-            "Nuestro equipo revisa las solicitudes en 24–48 horas. Priorizamos la calidad y seguridad para todas nuestras creadoras.",
-        },
-        {
-          question: "¿Necesito promocionarme?",
-          answer:
-            "No, nuestro equipo experto en marketing maneja toda la promoción en Reddit, TikTok, Telegram y otras plataformas para hacer crecer tu audiencia.",
-        },
-        {
-          question: "¿Qué contenido puedo crear?",
-          answer:
-            "Tienes total libertad creativa — desde fitness y glamour hasta contenido NSFW. Te ayudaremos a encontrar tu nicho y maximizar tus ganancias.",
-        },
-      ],
-    },
-    stats: {
-      title: "Por qué las modelos nos eligen",
-      items: [
-        { value: 90, display: "80+%", label: "Ganancias conservadas", suffix: "%" },
-        { value: 48, label: "Tiempo de aprobación", suffix: "hrs" },
-        { value: 2, label: "Creadoras destacadas", suffix: "" },
-        { value: 24, label: "Respuesta de soporte", suffix: "hrs" },
-      ],
-    },
-    contact: {
-      title: "Soporte y Contacto",
-      email: "soporte@globalfanflicks.com",
-      telegram: "@GlobalFanFlicks",
-      whatsapp: "+1 (555) 123-4567",
-    },
-    footer: {
-      text: "Global Fan Flicks® es una división de The Elite Vibe, LLC",
-      links: ["Términos", "Privacidad", "Telegram"],
-    },
-  },
-};
-
-// Reusable Button component with advanced animations
+// Reusable Button component
 const Button = ({
   icon,
   text,
@@ -898,7 +804,7 @@ const Button = ({
 }: {
   icon?: React.ReactNode;
   text: string;
-  onClick?: (e: React.MouseEvent) => void; // Updated this line
+  onClick?: (e: React.MouseEvent) => void;
   variant?: "primary" | "secondary" | "ghost";
   size?: "small" | "medium" | "large";
 }) => {
@@ -952,27 +858,26 @@ const Button = ({
   );
 };
 
-// Updated ApplyForm component with proper typing
-// Updated ApplyForm component with WhatsApp and email fields
-interface FormData {
-  name: string;
-  age: number;
-  country: string;
-  comfort?: string;
-  links?: string;
-  email: string;
-  telegram: string;
-  whatsapp?: string;
-}
-
+// ApplyForm component
 const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
+  interface FormData {
+    name: string;
+    age: number;
+    country: string;
+    email: string;
+    comfort?: string;
+    links?: string;
+    telegram: string;
+    whatsapp?: string;
+  }
+
   const {
     register,
     handleSubmit,
     reset,
     formState: { isSubmitting },
   } = useForm<FormData>();
-  const formContent = content[lang].apply.form;
+  
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -1023,7 +928,7 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
     }
   };
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
     setError(null);
 
     try {
@@ -1042,6 +947,39 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
     }
   };
 
+  const formContent = {
+    en: {
+      name: "Name (Stage)",
+      age: "Age",
+      country: "Country",
+      comfort: "Comfort Level",
+      links: "Links (Instagram, TikTok)",
+      email: "Email Address",
+      telegram: "Telegram Username",
+      whatsapp: "WhatsApp Number",
+      submit: "Submit Application",
+      successTitle: "Application Submitted!",
+      successMessage:
+        "We'll review your application and get back to you within 48 hours.",
+      telegramButton: "Message Us on Telegram",
+    },
+    es: {
+      name: "Nombre (Artístico)",
+      age: "Edad",
+      country: "País",
+      comfort: "Nivel de comodidad",
+      links: "Enlaces (Instagram, TikTok)",
+      email: "Correo Electrónico",
+      telegram: "Usuario de Telegram",
+      whatsapp: "Número de WhatsApp",
+      submit: "Enviar solicitud",
+      successTitle: "¡Solicitud Enviada!",
+      successMessage:
+        "Revisaremos tu solicitud y nos pondremos en contacto contigo en 48 horas.",
+      telegramButton: "Escríbenos en Telegram",
+    },
+  };
+
   return (
     <GradientCard
       style={{ maxWidth: 500, margin: "0 auto", textAlign: "left" }}
@@ -1057,20 +995,14 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
             style={{ color: "#4ade80", marginBottom: "1rem" }}
           />
           <h3 style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>
-            {lang === "en" ? "Application Submitted!" : "¡Solicitud Enviada!"}
+            {formContent[lang].successTitle}
           </h3>
           <p style={{ color: "#aaa", marginBottom: "1rem" }}>
-            {lang === "en"
-              ? "We'll review your application and get back to you within 48 hours."
-              : "Revisaremos tu solicitud y nos pondremos en contacto contigo en 48 horas."}
+            {formContent[lang].successMessage}
           </p>
           <Button
             icon={<MessageSquare size={18} />}
-            text={
-              lang === "en"
-                ? "Message Us on Telegram"
-                : "Escríbenos en Telegram"
-            }
+            text={formContent[lang].telegramButton}
             onClick={() =>
               window.open("https://t.me/GlobalFanFlicks", "_blank")
             }
@@ -1120,7 +1052,7 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
                 color: "#aaa",
               }}
             >
-              {formContent.name}:
+              {formContent[lang].name}:
             </span>
             <input
               {...register("name", { required: true })}
@@ -1152,7 +1084,7 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
                   color: "#aaa",
                 }}
               >
-                {formContent.age}:
+                {formContent[lang].age}:
               </span>
               <input
                 type="number"
@@ -1177,7 +1109,7 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
                   color: "#aaa",
                 }}
               >
-                {formContent.country}:
+                {formContent[lang].country}:
               </span>
               <input
                 {...register("country", { required: true })}
@@ -1202,7 +1134,7 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
                 color: "#aaa",
               }}
             >
-              {formContent.email}:
+              {formContent[lang].email}:
             </span>
             <input
               type="email"
@@ -1227,7 +1159,7 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
                 color: "#aaa",
               }}
             >
-              {formContent.comfort}:
+              {formContent[lang].comfort}:
             </span>
             <input
               {...register("comfort")}
@@ -1251,7 +1183,7 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
                 color: "#aaa",
               }}
             >
-              {formContent.links}:
+              {formContent[lang].links}:
             </span>
             <input
               {...register("links")}
@@ -1275,7 +1207,7 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
                 color: "#aaa",
               }}
             >
-              {formContent.telegram}:
+              {formContent[lang].telegram}:
             </span>
             <div style={{ display: "flex", alignItems: "center" }}>
               <span
@@ -1315,7 +1247,7 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
                 color: "#aaa",
               }}
             >
-              {formContent.whatsapp}:
+              {formContent[lang].whatsapp}:
             </span>
             <input
               {...register("whatsapp")}
@@ -1373,7 +1305,7 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
             ) : (
               <>
                 <UserPlus size={20} />
-                {formContent.submit}
+                {formContent[lang].submit}
               </>
             )}
           </motion.button>
@@ -1383,7 +1315,7 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
   );
 };
 
-// Section styles with responsive design
+// Section styles
 const sectionStyle: React.CSSProperties = {
   maxWidth: "1200px",
   margin: "0 auto",
@@ -1421,9 +1353,29 @@ const subheadingStyle: React.CSSProperties = {
 export default function Home() {
   const [lang, setLang] = useState<"en" | "es">("en");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [activeModel, setActiveModel] = useState<number | null>(null);
   const [activeFAQ, setActiveFAQ] = useState<number | null>(null);
-  const currentContent = content[lang];
+  const [isScrolled, setIsScrolled] = useState(false);
+  const mainRef = useRef<HTMLElement>(null);
+
+  // Handle scroll for logo visibility
+  useEffect(() => {
+    const handleScroll = () => {
+      if (mainRef.current) {
+        const scrollPosition = mainRef.current.scrollTop;
+        setIsScrolled(scrollPosition > 50);
+      }
+    };
+
+    if (mainRef.current) {
+      mainRef.current.addEventListener("scroll", handleScroll);
+    }
+
+    return () => {
+      if (mainRef.current) {
+        mainRef.current.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, []);
 
   // Close mobile menu when language changes
   useEffect(() => {
@@ -1434,6 +1386,233 @@ export default function Home() {
   const toggleFAQ = (index: number) => {
     setActiveFAQ(activeFAQ === index ? null : index);
   };
+
+  // Content
+  const content = {
+    en: {
+      hero: {
+        title: "🪩 Models Rule.",
+        subtitle:
+          "Your Brand. Your Rules.\nWe build it — you own it.\nLaunch your own platform. Stay private. Earn more.\nOnlyFans. Fansly. Your Own Website.",
+        cta1: "Apply to Join",
+        cta2: "Explore Benefits",
+        cta3: "Contact Us",
+      },
+      about: {
+        title: "About Global Fan Flicks",
+        description:
+          "Built by real creators, digital strategists, and tech experts — Global Fan Flicks (a division of The Elite Vibe, LLC) empowers NSFW and fitness creators to launch and own their platforms, keep 100% creative control, and grow globally.",
+      },
+      benefits: {
+        title: "What You Get",
+        items: [
+          {
+            icon: <Star size={20} />,
+            text: "Your own branded site (hosted on Scrile)",
+          },
+          {
+            icon: <DollarSign size={20} />,
+            text: "Higher earnings than other platforms",
+          },
+          {
+            icon: <Shield size={20} />,
+            text: "Total privacy (faceless options, AI overlays)",
+          },
+          {
+            icon: <Users size={20} />,
+            text: "All content uploads & promotions handled by us",
+          },
+          {
+            icon: <BarChart2 size={20} />,
+            text: "We grow your fanbase (Reddit, TikTok, Telegram, Twitter, Instagram)",
+          },
+          {
+            icon: <UserPlus size={20} />,
+            text: "Human account managers — no bots",
+          },
+          { icon: <Mail size={20} />, text: "Weekly insights & support" },
+          {
+            icon: <Globe size={20} />,
+            text: "Multi-language (EN/ES) community",
+          },
+        ],
+        quote:
+          "You create. We build and grow everything else. Rest, earn, and stay safe — that's our promise.",
+      },
+      howItWorks: {
+        title: "How It Works",
+        steps: [
+          { icon: <UserPlus size={18} />, text: "Apply as a creator" },
+          {
+            icon: <CheckCircle size={18} />,
+            text: "Get approved in 24–48 hours",
+          },
+          {
+            icon: <Rocket size={18} />,
+            text: "Your platform is launched by us",
+          },
+          { icon: <Camera size={18} />, text: "You create content" },
+          { icon: <Zap size={18} />, text: "We promote & manage everything" },
+          { icon: <DollarSign size={18} />, text: "You track & earn" },
+        ],
+      },
+      apply: {
+        title: "Apply to Join",
+        subtitle: "Start your journey in just a few steps",
+      },
+      faqs: {
+        title: "Frequently Asked Questions",
+        items: [
+          {
+            question: "Can I stay faceless?",
+            answer:
+              "Yes! Many of our models use AI overlays or soft content only. We provide advanced privacy tools to protect your identity while maximizing your earnings.",
+          },
+          {
+            question: "What percentage do I earn?",
+            answer:
+              "You earn significantly more than traditional platforms. While we don't take a percentage like other sites, we do charge a reasonable fee for our full-service management, profile creation, and marketing campaigns.",
+          },
+          {
+            question: "How long to get approved?",
+            answer:
+              "Our team reviews applications within 24–48 hours. We prioritize quality and safety for all our creators.",
+          },
+          {
+            question: "Do I need to promote myself?",
+            answer:
+              "No, our expert marketing team handles all promotion across Reddit, TikTok, Telegram and other platforms to grow your audience.",
+          },
+          {
+            question: "What content can I create?",
+            answer:
+              "You have full creative freedom — from fitness and glamour to NSFW content. We'll help you find your niche and maximize earnings.",
+          },
+        ],
+      },
+      contact: {
+        title: "Support & Contact",
+        email: "je@globalfanflicks.com",
+        telegram: "@GlobalFanFlicks",
+        whatsapp: "+1 (726) 242-5583",
+      },
+      footer: {
+        text: "Global Fan Flicks® is a division of The Elite Vibe, LLC",
+        links: ["Terms", "Privacy", "Telegram"],
+      },
+    },
+    es: {
+      hero: {
+        title: "🪩 Las Modelos Mandan.",
+        subtitle:
+          "Tu Marca. Tus Reglas.\nNosotros lo construimos — tú lo posees.\nLanza tu propia plataforma. Mantén tu privacidad. Gana más.\nOnlyFans. Fansly. Tu Propio Sitio Web.",
+        cta1: "Aplicar para Unirse",
+        cta2: "Explorar Beneficios",
+        cta3: "Contáctanos",
+      },
+      about: {
+        title: "Acerca de Global Fan Flicks",
+        description:
+          "Creado por creadores reales, estrategas digitales y expertos en tecnología — Global Fan Flicks (una división de The Elite Vibe, LLC) empodera a los creadores NSFW y de fitness para que lancen y posean sus plataformas, mantengan el 100% de control creativo y crezcan globalmente.",
+      },
+      benefits: {
+        title: "Lo Que Obtienes",
+        items: [
+          {
+            icon: <Star size={20} />,
+            text: "Tu propio sitio con marca personal (alojado en Scrile)",
+          },
+          {
+            icon: <DollarSign size={20} />,
+            text: "Ganancias más altas que otras plataformas",
+          },
+          {
+            icon: <Shield size={20} />,
+            text: "Privacidad total (opciones sin rostro, superposiciones de IA)",
+          },
+          {
+            icon: <Users size={20} />,
+            text: "Nos encargamos de todas las cargas de contenido y promociones",
+          },
+          {
+            icon: <BarChart2 size={20} />,
+            text: "Hacemos crecer tu base de fans (Reddit, TikTok, Telegram, Twitter, Instagram)",
+          },
+          {
+            icon: <UserPlus size={20} />,
+            text: "Gerentes de cuenta humanos — sin bots",
+          },
+          { icon: <Mail size={20} />, text: "Información y soporte semanal" },
+          { icon: <Globe size={20} />, text: "Comunidad multilingüe (EN/ES)" },
+        ],
+        quote:
+          "Tú creas. Nosotros construimos y hacemos crecer todo lo demás. Descansa, gana y mantente segura — esa es nuestra promesa.",
+      },
+      howItWorks: {
+        title: "Cómo Funciona",
+        steps: [
+          { icon: <UserPlus size={18} />, text: "Solicita ser creador" },
+          {
+            icon: <CheckCircle size={18} />,
+            text: "Obtén aprobación en 24–48 horas",
+          },
+          { icon: <Rocket size={18} />, text: "Lanzamos tu plataforma" },
+          { icon: <Camera size={18} />, text: "Tú creas contenido" },
+          {
+            icon: <Zap size={18} />,
+            text: "Nosotros promocionamos y gestionamos todo",
+          },
+          { icon: <DollarSign size={18} />, text: "Tú rastreas y ganas" },
+        ],
+      },
+      apply: {
+        title: "Solicita Unirte",
+        subtitle: "Comienza tu viaje en solo unos pasos",
+      },
+      faqs: {
+        title: "Preguntas frecuentes",
+        items: [
+          {
+            question: "¿Puedo permanecer sin mostrar mi rostro?",
+            answer:
+              "¡Sí! Muchas de nuestras modelos usan superposiciones de IA o solo contenido suave. Proporcionamos herramientas avanzadas de privacidad para proteger tu identidad mientras maximizas tus ganancias.",
+          },
+          {
+            question: "¿Qué porcentaje gano?",
+            answer:
+              "Ganas significativamente más que en plataformas tradicionales. Si bien no tomamos un porcentaje como otros sitios, cobramos una tarifa razonable por nuestra gestión de servicio completo, creación de perfiles y campañas de marketing.",
+          },
+          {
+            question: "¿Cuánto tiempo tarda la aprobación?",
+            answer:
+              "Nuestro equipo revisa las solicitudes en 24–48 horas. Priorizamos la calidad y seguridad para todas nuestras creadoras.",
+          },
+          {
+            question: "¿Necesito promocionarme?",
+            answer:
+              "No, nuestro equipo experto en marketing maneja toda la promoción en Reddit, TikTok, Telegram y otras plataformas para hacer crecer tu audiencia.",
+          },
+          {
+            question: "¿Qué contenido puedo crear?",
+            answer:
+              "Tienes total libertad creativa — desde fitness y glamour hasta contenido NSFW. Te ayudaremos a encontrar tu nicho y maximizar tus ganancias.",
+          },
+        ],
+      },
+      contact: {
+        title: "Soporte y Contacto",
+        email: "soporte@globalfanflicks.com",
+        telegram: "@GlobalFanFlicks",
+        whatsapp: "+1 (726) 242-5583",
+      },
+      footer: {
+        text: "Global Fan Flicks® es una división de The Elite Vibe, LLC",
+        links: ["Términos", "Privacidad", "Telegram"],
+      },
+    },
+  };
+
+  const currentContent = content[lang];
 
   return (
     <>
@@ -1451,83 +1630,28 @@ export default function Home() {
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
-        {/* <link
-          href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap"
-          rel="stylesheet"
-        /> */}
       </Head>
 
       <main
+        ref={mainRef}
         style={{
           fontFamily: "'Poppins', sans-serif",
           background:
             "radial-gradient(circle at top left, #0a0420 0%, #1a1a2e 50%, #0a0420 100%)",
           color: "#fff",
           overflowX: "hidden",
+          height: "100vh",
+          overflowY: "auto",
+          scrollBehavior: "smooth",
         }}
       >
-        {/* Animated Background Elements - Hydration-Safe Version */}
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            zIndex: -1,
-            overflow: "hidden",
-          }}
-        >
-          {typeof window === "undefined"
-            ? null
-            : [...Array(10)].map((_, i) => {
-                // Generate stable random values based on index
-                const stableRandom = (seed: number) => {
-                  const x = Math.sin(i + seed) * 10000;
-                  return x - Math.floor(x);
-                };
-
-                const initialX = stableRandom(1) * 100;
-                const initialY = stableRandom(2) * 100;
-                const initialScale = stableRandom(3) * 0.5 + 0.5;
-                const targetX = stableRandom(4) * 100 - 50;
-                const targetY = stableRandom(5) * 100 - 50;
-                const duration = stableRandom(6) * 20 + 10;
-                const shadowSize = stableRandom(7) * 50 + 50;
-                const shadowSpread = stableRandom(8) * 20 + 10;
-
-                return (
-                  <motion.div
-                    key={i}
-                    initial={{
-                      x: initialX,
-                      y: initialY,
-                      opacity: 0.1,
-                      scale: initialScale,
-                    }}
-                    animate={{
-                      x: [null, targetX],
-                      y: [null, targetY],
-                      transition: {
-                        duration: duration,
-                        repeat: Infinity,
-                        repeatType: "reverse",
-                      },
-                    }}
-                    style={{
-                      position: "absolute",
-                      width: "1px",
-                      height: "1px",
-                      borderRadius: "50%",
-                      background: "rgba(255,255,255,0.2)",
-                      boxShadow: `0 0 ${shadowSize}px ${shadowSpread}px rgba(161, 0, 255, 0.5)`,
-                    }}
-                  />
-                );
-              })}
-        </div>
-
-        <LanguageToggle currentLang={lang} onChange={setLang} />
+        {/* Logo and Language Toggle */}
+        <Logo visible={!isScrolled} />
+        <LanguageToggle
+          currentLang={lang}
+          onChange={setLang}
+          visible={!isScrolled}
+        />
 
         {/* Mobile Menu Button */}
         <motion.button
@@ -1560,91 +1684,6 @@ export default function Home() {
           lang={lang}
           setLang={setLang}
         />
-
-       {/* Futuristic Logo - Add this right after the MobileMenu button */}
-<motion.div
-  initial={{ opacity: 0, scale: 0.8 }}
-  animate={{
-    opacity: 1,
-    scale: 1,
-    boxShadow: [
-      "0 0 10px rgba(161, 0, 255, 0.5)",
-      "0 0 20px rgba(161, 0, 255, 0.7)",
-      "0 0 10px rgba(161, 0, 255, 0.5)",
-    ],
-  }}
-  transition={{
-    delay: 0.5,
-    boxShadow: {
-      duration: 2,
-      repeat: Infinity,
-      repeatType: "reverse",
-    },
-  }}
-  whileHover={{
-    scale: 1.1,
-    boxShadow: "0 0 30px rgba(161, 0, 255, 0.8)",
-  }}
-  className="futuristic-logo"
-  style={{
-    position: "fixed",
-    top: "1.5rem",
-    left: "calc(50% - 30px)",
-    zIndex: 998,
-    width: "60px",
-    height: "60px",
-    borderRadius: "50%",
-    overflow: "hidden",
-    border: "2px solid rgba(161, 0, 255, 0.5)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    background: "rgba(20, 20, 20, 0.7)",
-    backdropFilter: "blur(10px)",
-    boxShadow:
-      "0 0 0 2px rgba(161, 0, 255, 0.3), 0 0 20px rgba(161, 0, 255, 0.5)",
-    cursor: "pointer",
-    margin: "0 auto",
-  }}
->
-  <div
-    style={{
-      position: "absolute",
-      top: "-10px",
-      left: "-10px",
-      right: "-10px",
-      bottom: "-10px",
-      borderRadius: "50%",
-      background:
-        "radial-gradient(circle, rgba(161, 0, 255, 0.2) 0%, transparent 70%)",
-      zIndex: -1,
-    }}
-  />
-
-  <div
-    style={{
-      width: "90%",
-      height: "90%",
-      borderRadius: "50%",
-      overflow: "hidden",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-    }}
-  >
-    <img
-      src="/images/logo.png" // Change this to your logo path
-      alt="Logo"
-      style={{
-        width: "100%",
-        height: "100%",
-        objectFit: "cover",
-        objectPosition: "center",
-      }}
-    />
-  </div>
-</motion.div>
-
 
         {/* HERO SECTION */}
         <motion.section
@@ -1719,6 +1758,7 @@ export default function Home() {
                 maxWidth: "800px",
                 marginBottom: "3rem",
                 padding: "0 1rem",
+                whiteSpace: "pre-line",
               }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -1762,84 +1802,30 @@ export default function Home() {
                 size="large"
               />
               <Button
-                icon={<Globe size={20} />}
+                icon={<MessageSquare size={20} />}
                 text={currentContent.hero.cta3}
-                onClick={() => {
-                  // Try to open app directly
-                  window.location.href =
-                    "tg://resolve?domain=GlobalFanFlicksOfficial";
-
-                  // If still on page after timeout, redirect to web
-                  setTimeout(() => {
-                    if (!document.hidden) {
-                      window.open(
-                        "https://t.me/GlobalFanFlicksOfficial",
-                        "_blank"
-                      );
-                    }
-                  }, 300);
-                }}
+                onClick={() =>
+                  window.open("https://t.me/GlobalFanFlicks", "_blank")
+                }
                 variant="ghost"
                 size="large"
               />
             </motion.div>
           </motion.div>
 
-          {/* Profiles Showcase Section (Replacing 3D Model Preview) */}
+          {/* Global Models Showcase */}
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1 }}
             style={{ marginTop: "4rem", padding: "0 1rem" }}
           >
-            <ProfilesShowcase />
+            <GlobalModelsShowcase lang={lang} />
           </motion.div>
         </motion.section>
 
-        {/* STATS SECTION */}
-        <motion.section
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true, margin: "-100px" }}
-          style={{
-            ...sectionStyle,
-            padding: "4rem 1.5rem",
-            background:
-              "linear-gradient(to right, rgba(161,0,255,0.1), rgba(255,0,122,0.1))",
-            borderRadius: "16px",
-            margin: "2rem auto",
-            maxWidth: "1200px",
-          }}
-        >
-          <h2 style={{ ...headingStyle, marginBottom: "3rem" }}>
-            {currentContent.stats.title}
-          </h2>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-              gap: "1.5rem",
-              marginTop: "2rem",
-            }}
-          >
-            {currentContent.stats.items.map((stat, index) => (
-              <motion.div
-                key={index}
-                whileHover={{ y: -5 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <GradientCard style={{ height: "100%" }}>
-                  <StatsCounter
-                    target={stat.value}
-                    label={stat.label}
-                    suffix={stat.suffix}
-                  />
-                </GradientCard>
-              </motion.div>
-            ))}
-          </div>
-        </motion.section>
+        {/* WHY MODELS RULE SECTION */}
+        <WhyModelsRule lang={lang} />
 
         {/* ABOUT SECTION */}
         <motion.section
@@ -1952,6 +1938,7 @@ export default function Home() {
               marginRight: "auto",
               position: "relative",
               padding: "1.5rem",
+              whiteSpace: "pre-line",
             }}
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -1969,7 +1956,7 @@ export default function Home() {
                 borderRadius: "3px",
               }}
             />
-            {`&ldquo;${currentContent.benefits.quote}&rdquo;`}
+            {currentContent.benefits.quote}
           </motion.blockquote>
         </motion.section>
 
@@ -2053,129 +2040,6 @@ export default function Home() {
           </div>
         </motion.section>
 
-        {/* MODEL WALL */}
-        <motion.section
-          id="models"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true, margin: "-100px" }}
-          style={{ ...sectionStyle, padding: "4rem 1rem" }}
-        >
-          <p style={subheadingStyle}>{currentContent.models.title}</p>
-          <h2 style={headingStyle}>{currentContent.models.subtitle}</h2>
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-              gap: "1.5rem",
-              marginTop: "3rem",
-              padding: "0 1rem",
-            }}
-          >
-            {modelData.map((model) => (
-              <motion.div
-                key={model.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-                whileHover={{ y: -10 }}
-                onClick={() =>
-                  setActiveModel(activeModel === model.id ? null : model.id)
-                }
-                style={{
-                  cursor: "pointer",
-                  position: "relative",
-                  overflow: "hidden",
-                  borderRadius: "16px",
-                  height: "350px",
-                  backgroundImage: `url(${model.image})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                }}
-              >
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    padding: "1.5rem",
-                    background:
-                      "linear-gradient(to top, rgba(0,0,0,0.8), transparent)",
-                    color: "#fff",
-                    textAlign: "left",
-                  }}
-                >
-                  <h3
-                    style={{
-                      fontSize: "1.3rem",
-                      fontWeight: 600,
-                      marginBottom: "0.3rem",
-                    }}
-                  >
-                    {model.name}
-                  </h3>
-                  <p style={{ fontSize: "0.9rem", opacity: 0.8 }}>
-                    {model.category} • {model.country}
-                  </p>
-                </div>
-
-                <AnimatePresence>
-                  {activeModel === model.id && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      style={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        background: "rgba(0,0,0,0.7)",
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        padding: "2rem",
-                        textAlign: "center",
-                      }}
-                    >
-                      <h3
-                        style={{
-                          fontSize: "1.5rem",
-                          fontWeight: 600,
-                          marginBottom: "0.5rem",
-                        }}
-                      >
-                        {model.name}
-                      </h3>
-                      <p style={{ marginBottom: "1rem" }}>
-                        {model.category} Model from {model.country}
-                      </p>
-                      <Button
-                        text={lang === "en" ? "View Profile" : "Ver Perfil"}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          // In production, would link to model's actual profile
-                          window.open(
-                            "https://unsplash.com/s/photos/model",
-                            "_blank"
-                          );
-                        }}
-                        size="small"
-                      />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            ))}
-          </div>
-        </motion.section>
-
         {/* APPLY NOW FORM */}
         <motion.section
           id="apply"
@@ -2228,7 +2092,6 @@ export default function Home() {
           </div>
         </motion.section>
 
-        {/* CONTACT & FOOTER */}
         {/* CONTACT & FOOTER */}
         <motion.section
           id="contact"
@@ -2358,7 +2221,7 @@ export default function Home() {
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
                 onMouseLeave={(e) => (e.currentTarget.style.color = "#999")}
               >
-                Terms
+                {lang === "en" ? "Terms" : "Términos"}
               </Link>
 
               <Link
@@ -2371,7 +2234,7 @@ export default function Home() {
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
                 onMouseLeave={(e) => (e.currentTarget.style.color = "#999")}
               >
-                Privacy
+                {lang === "en" ? "Privacy" : "Privacidad"}
               </Link>
 
               <a
