@@ -551,6 +551,7 @@ const Logo = ({ visible }: { visible: boolean }) => {
         top: "1.5rem",
         left: "50%",
         transform: "translateX(-50%)",
+        marginLeft: "-30px", // ✅ This line is new: shifts slightly left
         zIndex: 998,
         width: "clamp(70px, 12vw, 100px)", // ⬆️ increased size
         height: "clamp(70px, 12vw, 100px)", // ⬆️ increased size
@@ -565,8 +566,8 @@ const Logo = ({ visible }: { visible: boolean }) => {
       <Image
         src="/images/logo.png"
         alt="Global Fan Flicks"
-        width={105}
-        height={105}
+        width={70}
+        height={70}
         style={{
           width: "100%",
           height: "100%",
