@@ -75,24 +75,7 @@ const globalModels = [
     image: "/images/Jisoo-model-image.png",
     bio: "Seoul's beauty — innocence with a secret fire.",
   },
-  {
-    id: 6,
-    name: "Anastasia",
-    category: "Elegant",
-    country: "Russia 🇷🇺",
-    location: "Moscow",
-    image: "/images/Anastasia-model-image.png",
-    bio: "From Moscow with ice-cold eyes and fire in her pose.",
-  },
-  {
-    id: 7,
-    name: "Priya",
-    category: "Traditional",
-    country: "India 🇮🇳",
-    location: "Mumbai",
-    image: "/images/Priya-model-image.png",
-    bio: "Traditional roots, modern fire — bold and graceful.",
-  },
+ 
   {
     id: 8,
     name: "Chloe",
@@ -139,15 +122,7 @@ const globalModels = [
     image: "/images/Zara-model-image.jpg",
     bio: "Sun-drenched curves and island soul — Zara lights up every shoreline.",
   },
-  {
-    id: 13,
-    name: "Natalya",
-    category: "Ice Queen",
-    country: "Russia 🇷🇺",
-    location: "Saint Petersburg",
-    image: "/images/Natalya-model-image.jpg",
-    bio: "Snow-kissed elegance with a mysterious gaze — Natalya owns the frost.",
-  },
+  
 ];
 
 // Global Models Showcase Component
@@ -577,32 +552,33 @@ const Logo = ({ visible }: { visible: boolean }) => {
         left: "50%",
         transform: "translateX(-50%)",
         zIndex: 998,
-        width: "clamp(50px, 8vw, 70px)",
-        height: "clamp(50px, 8vw, 70px)",
+        width: "clamp(70px, 12vw, 100px)", // ⬆️ increased size
+        height: "clamp(70px, 12vw, 100px)", // ⬆️ increased size
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         pointerEvents: "none",
-        borderRadius: "50%", // 🔥 added
-        overflow: "hidden", // 🔥 added
+        borderRadius: "50%",
+        overflow: "hidden",
       }}
     >
       <Image
-  src="/images/logo.png"
-  alt="Global Fan Flicks"
-  width={70}
-  height={70}
-  style={{
-    width: "100%",
-    height: "100%",
-    objectFit: "contain",
-    filter: "drop-shadow(0 0 8px rgba(161, 0, 255, 0.5))",
-    userSelect: "none",
-  }}
-/>
+        src="/images/logo.png"
+        alt="Global Fan Flicks"
+        width={105}
+        height={105}
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "contain",
+          filter: "drop-shadow(0 0 8px rgba(161, 0, 255, 0.5))",
+          userSelect: "none",
+        }}
+      />
     </motion.div>
   );
 };
+
 
 // Mobile Menu Component
 const MobileMenu = ({
