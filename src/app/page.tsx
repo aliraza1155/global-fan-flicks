@@ -66,63 +66,6 @@ const globalModels = [
     image: "/images/Camila-model-image.png",
     bio: "Rio’s hottest — passion, rhythm, and fire in every curve.",
   },
-  {
-    id: 5,
-    name: "Jisoo",
-    category: "Faceless AI",
-    country: "South Korea 🇰🇷",
-    location: "Seoul",
-    image: "/images/Jisoo-model-image.png",
-    bio: "Seoul's beauty — innocence with a secret fire.",
-  },
- 
-  {
-    id: 8,
-    name: "Chloe",
-    category: "Beach",
-    country: "Australia 🇦🇺",
-    location: "Gold Coast",
-    image: "/images/Chloe-model-image.png",
-    bio: "Sun-kissed Aussie babe with endless curves and confidence.",
-  },
-  {
-    id: 9,
-    name: "Sakura",
-    category: "Cultural",
-    country: "Japan 🇯🇵",
-    location: "Tokyo",
-    image: "/images/Sakura-model-image.png",
-    bio: "A modern twist on timeless Tokyo elegance.",
-  },
-
-  {
-    id: 10,
-    name: "Isla",
-    category: "Tropical",
-    country: "Australia 🇦🇺",
-    location: "Whitsunday Islands",
-    image: "/images/Isla-model-image.png",
-    bio: "Golden-hour glow and tropical fire — Isla owns every wave she walks past.",
-  },
-  {
-    id: 11,
-    name: "Hana",
-    category: "Urban Chic",
-    country: "South Korea 🇰🇷",
-    location: "Busan",
-    image: "/images/Hana-model-iamge.jpg",
-    bio: "Bold attitude meets flawless beauty — Hana redefines Korean edge.",
-  },
-  {
-    id: 12,
-    name: "Zara",
-    category: "Beach Exotic",
-    country: "Jamaica 🇯🇲",
-    location: "Montego Bay",
-    image: "/images/Zara-model-image.jpg",
-    bio: "Sun-drenched curves and island soul — Zara lights up every shoreline.",
-  },
-  
 ];
 
 // Global Models Showcase Component
@@ -235,24 +178,11 @@ const WhyModelsRule = ({ lang }: { lang: "en" | "es" }) => {
           : "Entramos, lo poseemos. Porque aquí? Nosotras mandamos.",
     },
     {
-      icon: "📈",
-      title:
-        lang === "en"
-          ? "A Place to Build Careers"
-          : "Un Lugar para Construir Carreras",
-      text:
-        lang === "en"
-          ? "Where ambition meets opportunity."
-          : "Donde la ambición se encuentra con la oportunidad.",
-    },
-    {
-      icon: "🤝",
-      title:
-        lang === "en" ? "Respect & Representation" : "Respeto y Representación",
-      text:
-        lang === "en"
-          ? "We uplift, protect, and partner with our creators."
-          : "Elevamos, protegemos y colaboramos con nuestros creadores.",
+      icon: "💰",
+      title: lang === "en" ? "Higher Earnings" : "Ganancias Mayores",
+      text: lang === "en" 
+        ? "Keep more of what you earn with our favorable revenue split." 
+        : "Conserva más de lo que ganas con nuestro favorable reparto de ingresos.",
     },
   ];
 
@@ -842,7 +772,6 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
     age: number;
     country: string;
     email: string;
-    comfort?: string;
     links?: string;
     telegram: string;
     whatsapp?: string;
@@ -868,7 +797,6 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
 *Age:* ${data.age}
 *Country:* ${data.country}
 *Email:* ${data.email}
-*Comfort Level:* ${data.comfort || "Not specified"}
 *Social Links:* ${data.links || "Not provided"}
 *Telegram Username:* @${data.telegram}
 *WhatsApp:* ${data.whatsapp || "Not provided"}
@@ -929,7 +857,6 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
       name: "Name (Stage)",
       age: "Age",
       country: "Country",
-      comfort: "Comfort Level",
       links: "Links (Instagram, TikTok)",
       email: "Email Address",
       telegram: "Telegram Username",
@@ -1116,30 +1043,6 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
             <input
               type="email"
               {...register("email", { required: true })}
-              style={{
-                width: "100%",
-                padding: "0.8rem",
-                borderRadius: "8px",
-                border: "1px solid rgba(255,255,255,0.1)",
-                background: "rgba(20,20,20,0.5)",
-                color: "#fff",
-                fontSize: "1rem",
-              }}
-            />
-          </label>
-
-          <label style={{ display: "block", marginBottom: "1.5rem" }}>
-            <span
-              style={{
-                display: "block",
-                marginBottom: "0.5rem",
-                color: "#aaa",
-              }}
-            >
-              {formContent[lang].comfort}:
-            </span>
-            <input
-              {...register("comfort")}
               style={{
                 width: "100%",
                 padding: "0.8rem",
