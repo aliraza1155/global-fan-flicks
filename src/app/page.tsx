@@ -86,7 +86,7 @@ const GlobalModelsShowcase = ({ lang }: { lang: "en" | "es" }) => {
           ? "🌍 Global Models. Global Reach."
           : "🌍 Modelos Globales. Alcance Global."}
       </h3>
-      <p style={{ color: "#ccc", maxWidth: "800px", margin: "0 auto 2rem" }}>
+      <p style={{ color: "#ccc", maxWidth: "950px", margin: "0 auto 2rem" }}>
         {lang === "en"
           ? "Our creators come from every corner of the world — and rule their platforms with style, power, and purpose."
           : "Nuestros creadores vienen de todos los rincones del mundo y dominan sus plataformas con estilo, poder y propósito."}
