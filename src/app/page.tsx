@@ -33,38 +33,30 @@ const globalModels = [
   {
     id: 1,
     name: "Ashley",
-    category: "Glamour",
     country: "USA 🇺🇸",
-    location: "Los Angeles",
     image: "/images/Ashley-model-image.png",
     bio: "Glamour queen from Los Angeles with a bold heart and seductive eyes.",
   },
   {
     id: 2,
-    name: "Amélie",
-    category: "Fashion",
+    name: "Andriana",
     country: "France 🇫🇷",
-    location: "Paris",
-    image: "/images/Amelie-model-image.png",
+    image: "/images/Andriana-model-image.png",
     bio: "Parisian elegance with sensual curves and bold style.",
   },
   {
     id: 3,
     name: "Malia",
-    category: "Tropical Exotic",
-    country: "Fiji 🇫🇯",
-    location: "Coral Coast",
+    country: "British 🇬🇧",
     image: "/images/Malia-model-image.jpg",
     bio: "Island breeze and fierce grace — Malia brings the tropics to life.",
   },
   {
     id: 4,
     name: "Camila",
-    category: "Fitness",
-    country: "Brazil 🇧🇷",
-    location: "Rio de Janeiro",
+    country: "Australia 🇦🇺",
     image: "/images/Camila-model-image.png",
-    bio: "Rio’s hottest — passion, rhythm, and fire in every curve.",
+    bio: "Rio's hottest — passion, rhythm, and fire in every curve.",
   },
 ];
 
@@ -143,9 +135,7 @@ const GlobalModelsShowcase = ({ lang }: { lang: "en" | "es" }) => {
                 >
                   {model.name}
                 </h3>
-                <p style={{ color: "#aaa" }}>
-                  {model.category} • {model.location}
-                </p>
+                <p style={{ color: "#aaa" }}>{model.country}</p>
               </div>
             </div>
           </motion.div>
@@ -483,8 +473,8 @@ const Logo = ({ visible }: { visible: boolean }) => {
         transform: "translateX(-50%)",
         marginLeft: "-30px", // ✅ This line is new: shifts slightly left
         zIndex: 998,
-        width: "clamp(70px, 12vw, 100px)", // ⬆️ increased size
-        height: "clamp(70px, 12vw, 100px)", // ⬆️ increased size
+        width: "clamp(80px, 14vw, 120px)", // ⬆️ increased size
+        height: "clamp(80px, 14vw, 120px)", // ⬆️ increased size
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -650,6 +640,20 @@ const MobileMenu = ({
             >
               <ArrowRight size={16} /> FAQ
             </a>
+
+             {/* Add to your existing navigation links (mobile and desktop) */}
+<a 
+  href="/blogs"
+  style={{
+    color: "#fff",
+    textDecoration: "none",
+    display: "flex",
+    alignItems: "center",
+    gap: "0.5rem"
+  }}
+>
+  <ArrowRight size={16} /> Blog
+</a>
           </nav>
 
           <div
@@ -781,75 +785,63 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
     register,
     handleSubmit,
     reset,
-    formState: { isSubmitting },
-  } = useForm<FormData>();
+    formState: { isSubmitting, errors },
+  } = useForm<FormData>({
+    mode: 'onBlur',
+  });
   
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submissionId, setSubmissionId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const sendToTelegram = async (data: FormData) => {
-    const botToken = "7643344349:AAEi7fqqfbXxro8KfJh1M_Heks42DNGfbSY";
-    const chatId = "@GlobalFanFlicks";
-
-    const message = `
-🌟 *New Model Application* 🌟
-*Name (Stage):* ${data.name}
-*Age:* ${data.age}
-*Country:* ${data.country}
-*Email:* ${data.email}
-*Social Links:* ${data.links || "Not provided"}
-*Telegram Username:* @${data.telegram}
-*WhatsApp:* ${data.whatsapp || "Not provided"}
-    `;
-
+  const submitToDatabase = async (data: FormData) => {
     try {
-      const response = await fetch(
-        `https://api.telegram.org/bot${botToken}/sendMessage`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            chat_id: chatId,
-            text: message,
-            parse_mode: "Markdown",
-          }),
-        }
-      );
+      const response = await fetch('https://app.globalfanflicks.com/submit.php', { // Changed to relative path
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
 
-      const result = await response.json();
-
-      if (!result.ok) {
-        throw new Error(
-          result.description || "Failed to send message to Telegram"
-        );
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
       }
 
-      return true;
+      return await response.json();
     } catch (error) {
-      console.error("Telegram API error:", error);
+      console.error("Submission error:", error);
       throw error;
     }
   };
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     setError(null);
-
     try {
-      await sendToTelegram(data);
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      setIsSubmitted(true);
-      reset();
-      setTimeout(() => setIsSubmitted(false), 5000);
-    } catch (error) {
-      console.error("Submission error:", error);
-      setError(
-        lang === "en"
-          ? "Failed to submit application. Please contact us directly on Telegram."
-          : "Error al enviar la solicitud. Por favor contáctenos directamente en Telegram."
-      );
-    }
+      const result = await submitToDatabase(data);
+      
+      if (result.success) {
+        setSubmissionId(result.id);
+        setIsSubmitted(true);
+        reset();
+        setTimeout(() => {
+          setIsSubmitted(false);
+          setSubmissionId(null);
+        }, 5000);
+      } else {
+        throw new Error(result.message || 'Submission failed');
+      }
+    } catch (error: unknown) {
+  console.error("Form submission error:", error);
+  setError(
+    error instanceof Error 
+      ? error.message 
+      : lang === "en"
+        ? "Failed to submit application. Please contact us directly on Telegram."
+        : "Error al enviar la solicitud. Por favor contáctenos directamente en Telegram."
+  );
+}
   };
 
   const formContent = {
@@ -863,32 +855,39 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
       whatsapp: "WhatsApp Number",
       submit: "Submit Application",
       successTitle: "Application Submitted!",
-      successMessage:
-        "We'll review your application and get back to you within 48 hours.",
+      successMessage: (id: number) => 
+        `We've received your application #${id}. We'll review it and get back to you within 48 hours.`,
       telegramButton: "Message Us on Telegram",
+      errors: {
+        required: "This field is required",
+        email: "Please enter a valid email",
+        age: "Minimum age is 18",
+      }
     },
     es: {
       name: "Nombre (Artístico)",
       age: "Edad",
       country: "País",
-      comfort: "Nivel de comodidad",
       links: "Enlaces (Instagram, TikTok)",
       email: "Correo Electrónico",
       telegram: "Usuario de Telegram",
       whatsapp: "Número de WhatsApp",
       submit: "Enviar solicitud",
       successTitle: "¡Solicitud Enviada!",
-      successMessage:
-        "Revisaremos tu solicitud y nos pondremos en contacto contigo en 48 horas.",
+      successMessage: (id: number) => 
+        `Hemos recibido tu solicitud #${id}. La revisaremos y nos pondremos en contacto contigo en 48 horas.`,
       telegramButton: "Escríbenos en Telegram",
+      errors: {
+        required: "Este campo es obligatorio",
+        email: "Por favor ingrese un correo válido",
+        age: "La edad mínima es 18",
+      }
     },
   };
 
   return (
-    <GradientCard
-      style={{ maxWidth: 500, margin: "0 auto", textAlign: "left" }}
-    >
-      {isSubmitted ? (
+    <GradientCard style={{ maxWidth: 500, margin: "0 auto", textAlign: "left" }}>
+      {isSubmitted && submissionId ? (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -902,14 +901,12 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
             {formContent[lang].successTitle}
           </h3>
           <p style={{ color: "#aaa", marginBottom: "1rem" }}>
-            {formContent[lang].successMessage}
+            {formContent[lang].successMessage(submissionId)}
           </p>
           <Button
             icon={<MessageSquare size={18} />}
             text={formContent[lang].telegramButton}
-            onClick={() =>
-              window.open("https://t.me/GlobalFanFlicks", "_blank")
-            }
+            onClick={() => window.open("https://t.me/GlobalFanFlicks", "_blank")}
             variant="secondary"
             size="medium"
           />
@@ -933,14 +930,8 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
               <div style={{ marginTop: "0.5rem" }}>
                 <Button
                   icon={<MessageSquare size={16} />}
-                  text={
-                    lang === "en"
-                      ? "Contact on Telegram"
-                      : "Contactar en Telegram"
-                  }
-                  onClick={() =>
-                    window.open("https://t.me/GlobalFanFlicks", "_blank")
-                  }
+                  text={formContent[lang].telegramButton}
+                  onClick={() => window.open("https://t.me/GlobalFanFlicks", "_blank")}
                   variant="ghost"
                   size="small"
                 />
@@ -948,121 +939,112 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
             </motion.div>
           )}
 
+          {/* Name Field */}
           <label style={{ display: "block", marginBottom: "1.5rem" }}>
-            <span
-              style={{
-                display: "block",
-                marginBottom: "0.5rem",
-                color: "#aaa",
-              }}
-            >
+            <span style={{ display: "block", marginBottom: "0.5rem", color: "#aaa" }}>
               {formContent[lang].name}:
             </span>
             <input
-              {...register("name", { required: true })}
+              {...register("name", { required: formContent[lang].errors.required })}
               style={{
                 width: "100%",
                 padding: "0.8rem",
                 borderRadius: "8px",
-                border: "1px solid rgba(255,255,255,0.1)",
+                border: errors.name ? "1px solid #ef4444" : "1px solid rgba(255,255,255,0.1)",
                 background: "rgba(20,20,20,0.5)",
                 color: "#fff",
                 fontSize: "1rem",
               }}
             />
+            {errors.name && (
+              <span style={{ color: "#ef4444", fontSize: "0.8rem" }}>{errors.name.message}</span>
+            )}
           </label>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-              gap: "1.5rem",
-              marginBottom: "1.5rem",
-            }}
-          >
+          {/* Age and Country Fields */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "1.5rem", marginBottom: "1.5rem" }}>
             <label>
-              <span
-                style={{
-                  display: "block",
-                  marginBottom: "0.5rem",
-                  color: "#aaa",
-                }}
-              >
+              <span style={{ display: "block", marginBottom: "0.5rem", color: "#aaa" }}>
                 {formContent[lang].age}:
               </span>
               <input
                 type="number"
-                {...register("age", { required: true, min: 18 })}
+                {...register("age", { 
+                  required: formContent[lang].errors.required,
+                  min: {
+                    value: 18,
+                    message: formContent[lang].errors.age
+                  }
+                })}
                 style={{
                   width: "100%",
                   padding: "0.8rem",
                   borderRadius: "8px",
-                  border: "1px solid rgba(255,255,255,0.1)",
+                  border: errors.age ? "1px solid #ef4444" : "1px solid rgba(255,255,255,0.1)",
                   background: "rgba(20,20,20,0.5)",
                   color: "#fff",
                   fontSize: "1rem",
                 }}
               />
+              {errors.age && (
+                <span style={{ color: "#ef4444", fontSize: "0.8rem" }}>{errors.age.message}</span>
+              )}
             </label>
 
             <label>
-              <span
-                style={{
-                  display: "block",
-                  marginBottom: "0.5rem",
-                  color: "#aaa",
-                }}
-              >
+              <span style={{ display: "block", marginBottom: "0.5rem", color: "#aaa" }}>
                 {formContent[lang].country}:
               </span>
               <input
-                {...register("country", { required: true })}
+                {...register("country", { required: formContent[lang].errors.required })}
                 style={{
                   width: "100%",
                   padding: "0.8rem",
                   borderRadius: "8px",
-                  border: "1px solid rgba(255,255,255,0.1)",
+                  border: errors.country ? "1px solid #ef4444" : "1px solid rgba(255,255,255,0.1)",
                   background: "rgba(20,20,20,0.5)",
                   color: "#fff",
                   fontSize: "1rem",
                 }}
               />
+              {errors.country && (
+                <span style={{ color: "#ef4444", fontSize: "0.8rem" }}>{errors.country.message}</span>
+              )}
             </label>
           </div>
 
+          {/* Email Field */}
           <label style={{ display: "block", marginBottom: "1.5rem" }}>
-            <span
-              style={{
-                display: "block",
-                marginBottom: "0.5rem",
-                color: "#aaa",
-              }}
-            >
+            <span style={{ display: "block", marginBottom: "0.5rem", color: "#aaa" }}>
               {formContent[lang].email}:
             </span>
             <input
               type="email"
-              {...register("email", { required: true })}
+              {...register("email", { 
+                required: formContent[lang].errors.required,
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: formContent[lang].errors.email
+                }
+              })}
               style={{
                 width: "100%",
                 padding: "0.8rem",
                 borderRadius: "8px",
-                border: "1px solid rgba(255,255,255,0.1)",
+                border: errors.email ? "1px solid #ef4444" : "1px solid rgba(255,255,255,0.1)",
                 background: "rgba(20,20,20,0.5)",
                 color: "#fff",
                 fontSize: "1rem",
               }}
             />
+            {errors.email && (
+              <span style={{ color: "#ef4444", fontSize: "0.8rem" }}>{errors.email.message}</span>
+            )}
           </label>
 
+          {/* Links Field */}
           <label style={{ display: "block", marginBottom: "1.5rem" }}>
-            <span
-              style={{
-                display: "block",
-                marginBottom: "0.5rem",
-                color: "#aaa",
-              }}
-            >
+            <span style={{ display: "block", marginBottom: "0.5rem", color: "#aaa" }}>
               {formContent[lang].links}:
             </span>
             <input
@@ -1079,14 +1061,9 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
             />
           </label>
 
+          {/* Telegram Field */}
           <label style={{ display: "block", marginBottom: "1.5rem" }}>
-            <span
-              style={{
-                display: "block",
-                marginBottom: "0.5rem",
-                color: "#aaa",
-              }}
-            >
+            <span style={{ display: "block", marginBottom: "0.5rem", color: "#aaa" }}>
               {formContent[lang].telegram}:
             </span>
             <div style={{ display: "flex", alignItems: "center" }}>
@@ -1094,7 +1071,7 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
                 style={{
                   padding: "0.8rem",
                   background: "rgba(20,20,20,0.5)",
-                  border: "1px solid rgba(255,255,255,0.1)",
+                  border: errors.telegram ? "1px solid #ef4444" : "1px solid rgba(255,255,255,0.1)",
                   borderRight: "none",
                   borderTopLeftRadius: "8px",
                   borderBottomLeftRadius: "8px",
@@ -1104,29 +1081,27 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
                 @
               </span>
               <input
-                {...register("telegram", { required: true })}
+                {...register("telegram", { required: formContent[lang].errors.required })}
                 style={{
                   flex: 1,
                   padding: "0.8rem",
                   borderTopRightRadius: "8px",
                   borderBottomRightRadius: "8px",
-                  border: "1px solid rgba(255,255,255,0.1)",
+                  border: errors.telegram ? "1px solid #ef4444" : "1px solid rgba(255,255,255,0.1)",
                   background: "rgba(20,20,20,0.5)",
                   color: "#fff",
                   fontSize: "1rem",
                 }}
               />
             </div>
+            {errors.telegram && (
+              <span style={{ color: "#ef4444", fontSize: "0.8rem" }}>{errors.telegram.message}</span>
+            )}
           </label>
 
+          {/* WhatsApp Field */}
           <label style={{ display: "block", marginBottom: "2rem" }}>
-            <span
-              style={{
-                display: "block",
-                marginBottom: "0.5rem",
-                color: "#aaa",
-              }}
-            >
+            <span style={{ display: "block", marginBottom: "0.5rem", color: "#aaa" }}>
               {formContent[lang].whatsapp}:
             </span>
             <input
@@ -1140,9 +1115,7 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
                 color: "#fff",
                 fontSize: "1rem",
               }}
-              placeholder={
-                lang === "en" ? "e.g. +1234567890" : "ej. +1234567890"
-              }
+              placeholder={lang === "en" ? "e.g. +1234567890" : "ej. +1234567890"}
             />
           </label>
 
@@ -1165,6 +1138,7 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
               justifyContent: "center",
               alignItems: "center",
               gap: "0.5rem",
+              opacity: isSubmitting ? 0.7 : 1,
             }}
           >
             {isSubmitting ? (
@@ -1194,6 +1168,8 @@ const ApplyForm = ({ lang }: { lang: "en" | "es" }) => {
     </GradientCard>
   );
 };
+
+
 
 // Section styles
 const sectionStyle: React.CSSProperties = {
@@ -1238,24 +1214,25 @@ export default function Home() {
   const mainRef = useRef<HTMLElement>(null);
 
   // Handle scroll for logo visibility
-  useEffect(() => {
-    const handleScroll = () => {
-      if (mainRef.current) {
-        const scrollPosition = mainRef.current.scrollTop;
-        setIsScrolled(scrollPosition > 50);
-      }
-    };
-
-    if (mainRef.current) {
-      mainRef.current.addEventListener("scroll", handleScroll);
+  // Replace the scroll effect with this:
+useEffect(() => {
+  const mainElement = mainRef.current;
+  const handleScroll = () => {
+    if (mainElement) {
+      setIsScrolled(mainElement.scrollTop > 50);
     }
+  };
 
-    return () => {
-      if (mainRef.current) {
-        mainRef.current.removeEventListener("scroll", handleScroll);
-      }
-    };
-  }, []);
+  if (mainElement) {
+    mainElement.addEventListener("scroll", handleScroll);
+  }
+
+  return () => {
+    if (mainElement) {
+      mainElement.removeEventListener("scroll", handleScroll);
+    }
+  };
+}, []);
 
   // Close mobile menu when language changes
   useEffect(() => {
@@ -1378,7 +1355,7 @@ export default function Home() {
       },
       footer: {
         text: "Global Fan Flicks® is a division of The Elite Vibe, LLC",
-        links: ["Terms", "Privacy", "Telegram"],
+        links: ["Terms", "Privacy", "Blog", "Telegram"],
       },
     },
     es: {
@@ -2116,6 +2093,19 @@ export default function Home() {
               >
                 {lang === "en" ? "Privacy" : "Privacidad"}
               </Link>
+
+              <Link
+  href="/blogs"
+  style={{
+    color: "#999",
+    textDecoration: "none",
+    transition: "all 0.3s ease",
+  }}
+  onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
+  onMouseLeave={(e) => (e.currentTarget.style.color = "#999")}
+>
+  Blog
+</Link>
 
               <a
                 href="https://t.me/GlobalFanFlicks"
